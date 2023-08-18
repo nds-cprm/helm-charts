@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "geoserver.fullname" . }}-pvc
+  labels:
+    {{- include "geoserver.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  {{- if .Values.pvc.data.storage.className }}
+  storageClassName: {{ .Values.pvc.data.storage.className }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.pvc.data.storage.size }}
