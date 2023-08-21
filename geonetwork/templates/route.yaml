@@ -1,0 +1,19 @@
+{{- if .Values.route.enabled -}}
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ include "geonetwork.fullname" . }}
+  labels:
+    {{- include "geonetwork.labels" . | nindent 4 }}
+spec:
+  to:
+    kind: Service
+    name: {{ include "geonetwork.fullname" . }}
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+    destinationCACertificate: ''
+  path: /geonetwork
+  port:
+    targetPort: tcp-{{ .Values.service.port }}
+{{- end }}

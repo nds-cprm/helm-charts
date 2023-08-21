@@ -1,0 +1,20 @@
+{{- if .Values.pvc.data.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "geonetwork.fullname" . }}-data-pvc
+  labels:
+    {{- include "geonetwork.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  volumeMode: Filesystem
+  {{- with .Values.pvc.data.storage }}
+  {{- if .className }}
+  storageClassName: {{ .className }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .size }}
+  {{- end }}
+{{- end }}
