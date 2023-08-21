@@ -24,3 +24,5 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "2.19.7"
+
+icon: "https://geoserver.org/img/geoserver-logo.png"
