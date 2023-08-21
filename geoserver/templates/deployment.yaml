@@ -28,9 +28,11 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
+        {{- if .Values.pvc.data.enabled }}
         - name: geoserver-data
           persistentVolumeClaim:
             claimName: {{ include "geoserver.fullname" . }}-pvc
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -45,11 +47,15 @@ spec:
           env:
             - name: PROXY_BASE_URL
               value: /geoserver
+            {{- if .Values.pvc.data.enabled }}
             - name: GEOSERVER_DATA_DIR
               value: {{ .Values.pvc.data.storage.mountPath }}
+            {{- end }}
           volumeMounts:
+            {{- if .Values.pvc.data.enabled }}
             - mountPath: {{ .Values.pvc.data.storage.mountPath }}
               name: geoserver-data
+            {{- end }}
           # livenessProbe:
           #   httpGet:
           #     path: /

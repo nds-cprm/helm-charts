@@ -61,6 +61,7 @@ ingress:
 
 pvc:
   data:
+    enabled: true
     storage: 
       # className: thin
       size: 100Mi
