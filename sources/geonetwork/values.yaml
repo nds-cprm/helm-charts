@@ -5,10 +5,10 @@
 replicaCount: 1
 
 image:
-  repository: cmotadev/geonetwork
+  repository: ndscprm/geonetwork
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "3.10.2"
 
 imagePullSecrets: []
 nameOverride: ""
