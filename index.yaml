@@ -1,0 +1,31 @@
+apiVersion: v1
+entries:
+  geonetwork:
+  - apiVersion: v2
+    appVersion: 3.10.2
+    created: "2023-08-26T11:58:48.96563426-03:00"
+    description: GeoNetwork is a catalog application to manage spatially referenced
+      resources.  It provides powerful metadata editing and search functions as well
+      as an interactive web map viewer.  It is currently used in numerous Spatial
+      Data Infrastructure initiatives across the world
+    digest: 1704bd4a3754b9ffb0fdbef532129a084ea9e6fa51588a4cda0b77b85cb105cd
+    icon: https://geonetwork-opensource.org/_static/chrome/geonetwork3-logo.png
+    name: geonetwork
+    type: application
+    urls:
+    - https://nds-cprm.github.io/helm-charts/packages/geonetwork-0.1.0.tgz
+    version: 0.1.0
+  geoserver:
+  - apiVersion: v2
+    created: "2023-08-26T11:58:48.965980422-03:00"
+    description: GeoServer is an open source server for sharing geospatial data.  Designed
+      for interoperability, it publishes data from any major spatial data source using
+      open standards
+    digest: bca41721d72fda1c6dfdbba94d00a757aa47bd832ce5b35111a0a3d126ed61ef
+    icon: https://geoserver.org/img/geoserver-logo.png
+    name: geoserver
+    type: application
+    urls:
+    - https://nds-cprm.github.io/helm-charts/packages/geoserver-0.1.0.tgz
+    version: 0.1.0
+generated: "2023-08-26T11:58:48.965132086-03:00"
