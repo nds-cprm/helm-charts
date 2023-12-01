@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../geonode-stack.yml --controller deployment --provider kubernetes -c -o geonode
+    kompose.controller.type: deployment
+    kompose.serviceaccount-name: geonode-sa
+    kompose.version: 1.28.0 (c4137012e)
+    kompose.volume.size: 1Gi
+  creationTimestamp: null
+  labels:
+    {{- include "geoserver.labels" . | nindent 4 }}
+  name: {{ .Values.services.geoserver.name }}
+spec:
+  ports:
+    - name: http-alt
+      port: {{ .Values.services.geoserver.servicePort }}
+      targetPort: http-alt
+  selector:
+    {{- include "geoserver.selectorLabels" . | nindent 6 }}
+status:
+  loadBalancer: {}

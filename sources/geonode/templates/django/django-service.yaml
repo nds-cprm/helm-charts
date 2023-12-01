@@ -1,0 +1,23 @@
+{{- if not .Values.services.db.external }}
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../geonode-stack.yml --controller deployment --provider kubernetes -c -o geonode
+    kompose.serviceaccount-name: geonode-sa
+    kompose.version: 1.28.0 (c4137012e)
+    kompose.volume.size: 1Gi
+  creationTimestamp: null
+  labels:
+    {{- include "django.labels" . | nindent 4 }}
+  name: {{ .Values.services.django.name }}
+spec:
+  ports:
+    - name: wsgi
+      port: {{ .Values.services.django.servicePort }}
+      targetPort: wsgi
+  selector:
+    {{- include "django.selectorLabels" . | nindent 6 }}
+status:
+  loadBalancer: {}
+{{- end }}

@@ -1,0 +1,857 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../geonode-stack.yml --controller deployment --provider kubernetes -c -o geonode
+    kompose.controller.type: deployment
+    kompose.serviceaccount-name: geonode-sa
+    kompose.version: 1.28.0 (c4137012e)
+    kompose.volume.size: 1Gi
+  creationTimestamp: null
+  name: {{ .Values.services.geoserver.name }}
+  labels:
+    {{- include "geoserver.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "geoserver.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      {{- with .Values.services.geoserver.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        io.kompose.network/geonode-default: "true"
+        {{- include "geoserver.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - env:
+            - name: ACCOUNT_APPROVAL_REQUIRED
+              valueFrom:
+                configMapKeyRef:
+                  key: ACCOUNT_APPROVAL_REQUIRED
+                  name: {{ include "geonode.configmap" . }}
+            - name: ACCOUNT_AUTHENTICATION_METHOD
+              valueFrom:
+                configMapKeyRef:
+                  key: ACCOUNT_AUTHENTICATION_METHOD
+                  name: {{ include "geonode.configmap" . }}
+            - name: ACCOUNT_CONFIRM_EMAIL_ON_GET
+              valueFrom:
+                configMapKeyRef:
+                  key: ACCOUNT_CONFIRM_EMAIL_ON_GET
+                  name: {{ include "geonode.configmap" . }}
+            - name: ACCOUNT_EMAIL_CONFIRMATION_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  key: ACCOUNT_EMAIL_CONFIRMATION_EMAIL
+                  name: {{ include "geonode.configmap" . }}
+            - name: ACCOUNT_EMAIL_CONFIRMATION_REQUIRED
+              valueFrom:
+                configMapKeyRef:
+                  key: ACCOUNT_EMAIL_CONFIRMATION_REQUIRED
+                  name: {{ include "geonode.configmap" . }}
+            - name: ACCOUNT_EMAIL_REQUIRED
+              valueFrom:
+                configMapKeyRef:
+                  key: ACCOUNT_EMAIL_REQUIRED
+                  name: {{ include "geonode.configmap" . }}
+            - name: ACCOUNT_EMAIL_VERIFICATION
+              valueFrom:
+                configMapKeyRef:
+                  key: ACCOUNT_EMAIL_VERIFICATION
+                  name: {{ include "geonode.configmap" . }}
+            - name: ACCOUNT_OPEN_SIGNUP
+              valueFrom:
+                configMapKeyRef:
+                  key: ACCOUNT_OPEN_SIGNUP
+                  name: {{ include "geonode.configmap" . }}
+            - name: ADMIN_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  key: ADMIN_EMAIL
+                  name: {{ include "geonode.configmap" . }}
+            - name: ADMIN_MODERATE_UPLOADS
+              valueFrom:
+                configMapKeyRef:
+                  key: ADMIN_MODERATE_UPLOADS
+                  name: {{ include "geonode.configmap" . }}
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: ADMIN_PASSWORD
+                  name: {{ include "geonode.configmap" . }}
+            - name: ADMIN_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  key: ADMIN_USERNAME
+                  name: {{ include "geonode.configmap" . }}
+            - name: ALLOWED_HOSTS
+              valueFrom:
+                configMapKeyRef:
+                  key: ALLOWED_HOSTS
+                  name: {{ include "geonode.configmap" . }}
+            - name: API_LIMIT_PER_PAGE
+              valueFrom:
+                configMapKeyRef:
+                  key: API_LIMIT_PER_PAGE
+                  name: {{ include "geonode.configmap" . }}
+            - name: API_LOCKDOWN
+              valueFrom:
+                configMapKeyRef:
+                  key: API_LOCKDOWN
+                  name: {{ include "geonode.configmap" . }}
+            - name: ASYNC_SIGNALS
+              valueFrom:
+                configMapKeyRef:
+                  key: ASYNC_SIGNALS
+                  name: {{ include "geonode.configmap" . }}
+            - name: AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS
+              valueFrom:
+                configMapKeyRef:
+                  key: AUTO_ASSIGN_REGISTERED_MEMBERS_TO_CONTRIBUTORS
+                  name: {{ include "geonode.configmap" . }}
+            - name: AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: AUTO_ASSIGN_REGISTERED_MEMBERS_TO_REGISTERED_MEMBERS_GROUP_NAME
+                  name: {{ include "geonode.configmap" . }}
+            - name: AVATAR_GRAVATAR_SSL
+              valueFrom:
+                configMapKeyRef:
+                  key: AVATAR_GRAVATAR_SSL
+                  name: {{ include "geonode.configmap" . }}
+            - name: BACKUPS_VOLUME_DRIVER
+              valueFrom:
+                configMapKeyRef:
+                  key: BACKUPS_VOLUME_DRIVER
+                  name: {{ include "geonode.configmap" . }}
+            - name: BING_API_KEY
+              valueFrom:
+                configMapKeyRef:
+                  key: BING_API_KEY
+                  name: {{ include "geonode.configmap" . }}
+            - name: BROKER_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: BROKER_URL
+                  name: {{ include "geonode.configmap" . }}
+            - name: CACHE_BUSTING_STATIC_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: CACHE_BUSTING_STATIC_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+            - name: CELERY_BEAT_SCHEDULER
+              valueFrom:
+                configMapKeyRef:
+                  key: CELERY_BEAT_SCHEDULER
+                  name: {{ include "geonode.configmap" . }}
+            - name: CENTRALIZED_DASHBOARD_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: CENTRALIZED_DASHBOARD_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+            - name: CLIENT_RESULTS_LIMIT
+              valueFrom:
+                configMapKeyRef:
+                  key: CLIENT_RESULTS_LIMIT
+                  name: {{ include "geonode.configmap" . }}
+            - name: COMPOSE_PROJECT_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: COMPOSE_PROJECT_NAME
+                  name: {{ include "geonode.configmap" . }}
+            - name: CORS_ALLOW_ALL_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  key: CORS_ALLOW_ALL_ORIGINS
+                  name: {{ include "geonode.configmap" . }}
+            - name: CREATE_LAYER
+              valueFrom:
+                configMapKeyRef:
+                  key: CREATE_LAYER
+                  name: {{ include "geonode.configmap" . }}
+            - name: C_FORCE_ROOT
+              valueFrom:
+                configMapKeyRef:
+                  key: C_FORCE_ROOT
+                  name: {{ include "geonode.configmap" . }}
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_HOST
+                  name: {{ include "geonode.configmap" . }}
+            - name: DATABASE_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_PORT
+                  name: {{ include "geonode.configmap" . }}
+            - name: DATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: DATABASE_URL
+                  name: {{ include "geonode.configmap" . }}
+            - name: DEBUG
+              valueFrom:
+                configMapKeyRef:
+                  key: DEBUG
+                  name: {{ include "geonode.configmap" . }}
+            - name: DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+              valueFrom:
+                configMapKeyRef:
+                  key: DEFAULT_ANONYMOUS_DOWNLOAD_PERMISSION
+                  name: {{ include "geonode.configmap" . }}
+            - name: DEFAULT_ANONYMOUS_VIEW_PERMISSION
+              valueFrom:
+                configMapKeyRef:
+                  key: DEFAULT_ANONYMOUS_VIEW_PERMISSION
+                  name: {{ include "geonode.configmap" . }}
+            - name: DEFAULT_BACKEND_DATASTORE
+              valueFrom:
+                configMapKeyRef:
+                  key: DEFAULT_BACKEND_DATASTORE
+                  name: {{ include "geonode.configmap" . }}
+            - name: DEFAULT_BACKEND_UPLOADER
+              valueFrom:
+                configMapKeyRef:
+                  key: DEFAULT_BACKEND_UPLOADER
+                  name: {{ include "geonode.configmap" . }}
+            - name: DEFAULT_FROM_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  key: DEFAULT_FROM_EMAIL
+                  name: {{ include "geonode.configmap" . }}
+            - name: DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: DEFAULT_MAX_PARALLEL_UPLOADS_PER_USER
+                  name: {{ include "geonode.configmap" . }}
+            - name: DEFAULT_MAX_UPLOAD_SIZE
+              valueFrom:
+                configMapKeyRef:
+                  key: DEFAULT_MAX_UPLOAD_SIZE
+                  name: {{ include "geonode.configmap" . }}
+            - name: DJANGO_EMAIL_BACKEND
+              valueFrom:
+                configMapKeyRef:
+                  key: DJANGO_EMAIL_BACKEND
+                  name: {{ include "geonode.configmap" . }}
+            - name: DJANGO_EMAIL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: DJANGO_EMAIL_HOST
+                  name: {{ include "geonode.configmap" . }}
+            - name: DJANGO_EMAIL_HOST_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: DJANGO_EMAIL_HOST_PASSWORD
+                  name: {{ include "geonode.configmap" . }}
+            - name: DJANGO_EMAIL_HOST_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: DJANGO_EMAIL_HOST_USER
+                  name: {{ include "geonode.configmap" . }}
+            - name: DJANGO_EMAIL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: DJANGO_EMAIL_PORT
+                  name: {{ include "geonode.configmap" . }}
+            - name: DJANGO_EMAIL_USE_SSL
+              valueFrom:
+                configMapKeyRef:
+                  key: DJANGO_EMAIL_USE_SSL
+                  name: {{ include "geonode.configmap" . }}
+            - name: DJANGO_EMAIL_USE_TLS
+              valueFrom:
+                configMapKeyRef:
+                  key: DJANGO_EMAIL_USE_TLS
+                  name: {{ include "geonode.configmap" . }}
+            - name: DJANGO_SETTINGS_MODULE
+              valueFrom:
+                configMapKeyRef:
+                  key: DJANGO_SETTINGS_MODULE
+                  name: {{ include "geonode.configmap" . }}
+            - name: DOCKER_API_VERSION
+              valueFrom:
+                configMapKeyRef:
+                  key: DOCKER_API_VERSION
+                  name: {{ include "geonode.configmap" . }}
+            - name: DOCKER_ENV
+              valueFrom:
+                configMapKeyRef:
+                  key: DOCKER_ENV
+                  name: {{ include "geonode.configmap" . }}
+            - name: EMAIL_ENABLE
+              valueFrom:
+                configMapKeyRef:
+                  key: EMAIL_ENABLE
+                  name: {{ include "geonode.configmap" . }}
+            - name: ENABLE_JSONP
+              valueFrom:
+                configMapKeyRef:
+                  key: ENABLE_JSONP
+                  name: {{ include "geonode.configmap" . }}
+            - name: EXIF_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: EXIF_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+            - name: FAVORITE_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: FAVORITE_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+            - name: FORCE_REINIT
+              valueFrom:
+                configMapKeyRef:
+                  key: FORCE_REINIT
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEODATABASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: GEODATABASE_URL
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOIP_PATH
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOIP_PATH
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_CLIENT_LAYER_PREVIEW_LIBRARY
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_DATABASE
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_DATABASE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_DATABASE_PASSWORD
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_DATABASE_SCHEMA
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_DATABASE_SCHEMA
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_DATABASE_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_DATABASE_USER
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_DB_CONN_MAX_AGE
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_DB_CONN_MAX_AGE
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_DB_CONN_TOUT
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_DB_CONN_TOUT
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_GEODATABASE
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_GEODATABASE
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_GEODATABASE_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_GEODATABASE_PASSWORD
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_GEODATABASE_SCHEMA
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_GEODATABASE_SCHEMA
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_GEODATABASE_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_GEODATABASE_USER
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_INSTANCE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_INSTANCE_NAME
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_LB_HOST_IP
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_LB_HOST_IP
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEONODE_LB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: GEONODE_LB_PORT
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_ADMIN_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_ADMIN_PASSWORD
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_ADMIN_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_ADMIN_USER
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_CORS_ALLOWED_HEADERS
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_CORS_ALLOWED_HEADERS
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_CORS_ALLOWED_METHODS
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_CORS_ALLOWED_METHODS
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_CORS_ALLOWED_ORIGINS
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_CORS_ALLOWED_ORIGINS
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_CORS_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_CORS_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_JAVA_OPTS
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_JAVA_OPTS
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_LB_HOST_IP
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_LB_HOST_IP
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_LB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_LB_PORT
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_LOCATION
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_LOCATION
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_PUBLIC_LOCATION
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_PUBLIC_LOCATION
+                  name: {{ include "geonode.configmap" . }}
+            - name: GEOSERVER_WEB_UI_LOCATION
+              valueFrom:
+                configMapKeyRef:
+                  key: GEOSERVER_WEB_UI_LOCATION
+                  name: {{ include "geonode.configmap" . }}
+            - name: GOOGLE_API_KEY
+              valueFrom:
+                configMapKeyRef:
+                  key: GOOGLE_API_KEY
+                  name: {{ include "geonode.configmap" . }}
+            - name: HAYSTACK_ENGINE_INDEX_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: HAYSTACK_ENGINE_INDEX_NAME
+                  name: {{ include "geonode.configmap" . }}
+            - name: HAYSTACK_ENGINE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: HAYSTACK_ENGINE_URL
+                  name: {{ include "geonode.configmap" . }}
+            - name: HAYSTACK_SEARCH
+              valueFrom:
+                configMapKeyRef:
+                  key: HAYSTACK_SEARCH
+                  name: {{ include "geonode.configmap" . }}
+            - name: HAYSTACK_SEARCH_RESULTS_PER_PAGE
+              valueFrom:
+                configMapKeyRef:
+                  key: HAYSTACK_SEARCH_RESULTS_PER_PAGE
+                  name: {{ include "geonode.configmap" . }}
+            - name: HTTPS_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: HTTPS_HOST
+                  name: {{ include "geonode.configmap" . }}
+            - name: HTTPS_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: HTTPS_PORT
+                  name: {{ include "geonode.configmap" . }}
+            - name: HTTP_HOST
+              valueFrom:
+                configMapKeyRef:
+                  key: HTTP_HOST
+                  name: {{ include "geonode.configmap" . }}
+            - name: HTTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  key: HTTP_PORT
+                  name: {{ include "geonode.configmap" . }}
+            - name: INVOKE_LOG_STDOUT
+              valueFrom:
+                configMapKeyRef:
+                  key: INVOKE_LOG_STDOUT
+                  name: {{ include "geonode.configmap" . }}
+            - name: LDAP_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: LDAP_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+            {{- if .Values.configs.ldap.enabled }}
+            - name: LDAP_BIND_DN
+              valueFrom:
+                configMapKeyRef:
+                  key: LDAP_BIND_DN
+                  name: {{ include "geonode.configmap" . }}
+            - name: LDAP_BIND_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: LDAP_BIND_PASSWORD
+                  name: {{ include "geonode.configmap" . }}
+            - name: LDAP_GROUP_PROFILE_MEMBER_ATTR
+              valueFrom:
+                configMapKeyRef:
+                  key: LDAP_GROUP_PROFILE_MEMBER_ATTR
+                  name: {{ include "geonode.configmap" . }}
+            - name: LDAP_GROUP_SEARCH_DN
+              valueFrom:
+                configMapKeyRef:
+                  key: LDAP_GROUP_SEARCH_DN
+                  name: {{ include "geonode.configmap" . }}
+            - name: LDAP_GROUP_SEARCH_FILTERSTR
+              valueFrom:
+                configMapKeyRef:
+                  key: LDAP_GROUP_SEARCH_FILTERSTR
+                  name: {{ include "geonode.configmap" . }}
+            - name: LDAP_SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: LDAP_SERVER_URL
+                  name: {{ include "geonode.configmap" . }}
+            - name: LDAP_USER_SEARCH_DN
+              valueFrom:
+                configMapKeyRef:
+                  key: LDAP_USER_SEARCH_DN
+                  name: {{ include "geonode.configmap" . }}
+            - name: LDAP_USER_SEARCH_FILTERSTR
+              valueFrom:
+                configMapKeyRef:
+                  key: LDAP_USER_SEARCH_FILTERSTR
+                  name: {{ include "geonode.configmap" . }}
+             {{- end }}
+            - name: LETSENCRYPT_MODE
+              valueFrom:
+                configMapKeyRef:
+                  key: LETSENCRYPT_MODE
+                  name: {{ include "geonode.configmap" . }}
+            - name: LOCKDOWN_GEONODE
+              valueFrom:
+                configMapKeyRef:
+                  key: LOCKDOWN_GEONODE
+                  name: {{ include "geonode.configmap" . }}
+            - name: MAPBOX_ACCESS_TOKEN
+              valueFrom:
+                configMapKeyRef:
+                  key: MAPBOX_ACCESS_TOKEN
+                  name: {{ include "geonode.configmap" . }}
+            - name: MAX_DOCUMENT_SIZE
+              valueFrom:
+                configMapKeyRef:
+                  key: MAX_DOCUMENT_SIZE
+                  name: {{ include "geonode.configmap" . }}
+            - name: MEDIA_ROOT
+              valueFrom:
+                configMapKeyRef:
+                  key: MEDIA_ROOT
+                  name: {{ include "geonode.configmap" . }}
+            - name: MEMCACHED_BACKEND
+              valueFrom:
+                configMapKeyRef:
+                  key: MEMCACHED_BACKEND
+                  name: {{ include "geonode.configmap" . }}
+            - name: MEMCACHED_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: MEMCACHED_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+             {{- if .Values.services.memcached.enabled }}
+            - name: MEMCACHED_LOCATION
+              valueFrom:
+                configMapKeyRef:
+                  key: MEMCACHED_LOCATION
+                  name: {{ include "geonode.configmap" . }}
+            - name: MEMCACHED_LOCK_EXPIRE
+              valueFrom:
+                configMapKeyRef:
+                  key: MEMCACHED_LOCK_EXPIRE
+                  name: {{ include "geonode.configmap" . }}
+            - name: MEMCACHED_LOCK_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  key: MEMCACHED_LOCK_TIMEOUT
+                  name: {{ include "geonode.configmap" . }}
+            - name: MEMCACHED_OPTIONS
+              valueFrom:
+                configMapKeyRef:
+                  key: MEMCACHED_OPTIONS
+                  name: {{ include "geonode.configmap" . }}
+            {{- end }}
+            - name: MODIFY_TOPICCATEGORY
+              valueFrom:
+                configMapKeyRef:
+                  key: MODIFY_TOPICCATEGORY
+                  name: {{ include "geonode.configmap" . }}
+            - name: MONITORING_DATA_TTL
+              valueFrom:
+                configMapKeyRef:
+                  key: MONITORING_DATA_TTL
+                  name: {{ include "geonode.configmap" . }}
+            - name: MONITORING_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: MONITORING_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+            - name: MONITORING_HOST_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: MONITORING_HOST_NAME
+                  name: {{ include "geonode.configmap" . }}
+            - name: MONITORING_SERVICE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: MONITORING_SERVICE_NAME
+                  name: {{ include "geonode.configmap" . }}
+            - name: MOSAIC_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: MOSAIC_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+            - name: NGINX_BASE_URL
+              valueFrom:
+                configMapKeyRef:
+                  key: NGINX_BASE_URL
+                  name: {{ include "geonode.configmap" . }}
+            - name: OAUTH2_API_KEY
+              valueFrom:
+                configMapKeyRef:
+                  key: OAUTH2_API_KEY
+                  name: {{ include "geonode.configmap" . }}
+            - name: OAUTH2_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  key: OAUTH2_CLIENT_ID
+                  name: {{ include "geonode.configmap" . }}
+            - name: OAUTH2_CLIENT_SECRET
+              valueFrom:
+                configMapKeyRef:
+                  key: OAUTH2_CLIENT_SECRET
+                  name: {{ include "geonode.configmap" . }}
+            - name: OGC_REQUEST_BACKOFF_FACTOR
+              valueFrom:
+                configMapKeyRef:
+                  key: OGC_REQUEST_BACKOFF_FACTOR
+                  name: {{ include "geonode.configmap" . }}
+            - name: OGC_REQUEST_MAX_RETRIES
+              valueFrom:
+                configMapKeyRef:
+                  key: OGC_REQUEST_MAX_RETRIES
+                  name: {{ include "geonode.configmap" . }}
+            - name: OGC_REQUEST_POOL_CONNECTIONS
+              valueFrom:
+                configMapKeyRef:
+                  key: OGC_REQUEST_POOL_CONNECTIONS
+                  name: {{ include "geonode.configmap" . }}
+            - name: OGC_REQUEST_POOL_MAXSIZE
+              valueFrom:
+                configMapKeyRef:
+                  key: OGC_REQUEST_POOL_MAXSIZE
+                  name: {{ include "geonode.configmap" . }}
+            - name: OGC_REQUEST_TIMEOUT
+              valueFrom:
+                configMapKeyRef:
+                  key: OGC_REQUEST_TIMEOUT
+                  name: {{ include "geonode.configmap" . }}
+            - name: POSTGRESQL_MAX_CONNECTIONS
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRESQL_MAX_CONNECTIONS
+                  name: {{ include "geonode.configmap" . }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: {{ include "geonode.configmap" . }}
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_USER
+                  name: {{ include "geonode.configmap" . }}
+            - name: RESOLVER
+              valueFrom:
+                configMapKeyRef:
+                  key: RESOLVER
+                  name: {{ include "geonode.configmap" . }}
+            - name: RESOURCE_PUBLISHING
+              valueFrom:
+                configMapKeyRef:
+                  key: RESOURCE_PUBLISHING
+                  name: {{ include "geonode.configmap" . }}
+            - name: RESTART_POLICY_CONDITION
+              valueFrom:
+                configMapKeyRef:
+                  key: RESTART_POLICY_CONDITION
+                  name: {{ include "geonode.configmap" . }}
+            - name: RESTART_POLICY_DELAY
+              valueFrom:
+                configMapKeyRef:
+                  key: RESTART_POLICY_DELAY
+                  name: {{ include "geonode.configmap" . }}
+            - name: RESTART_POLICY_MAX_ATTEMPTS
+              valueFrom:
+                configMapKeyRef:
+                  key: RESTART_POLICY_MAX_ATTEMPTS
+                  name: {{ include "geonode.configmap" . }}
+            - name: RESTART_POLICY_WINDOW
+              valueFrom:
+                configMapKeyRef:
+                  key: RESTART_POLICY_WINDOW
+                  name: {{ include "geonode.configmap" . }}
+            - name: SECRET_KEY
+              valueFrom:
+                configMapKeyRef:
+                  key: SECRET_KEY
+                  name: {{ include "geonode.configmap" . }}
+            - name: SESSION_EXPIRED_CONTROL_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: SESSION_EXPIRED_CONTROL_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+            - name: SITEURL
+              valueFrom:
+                configMapKeyRef:
+                  key: SITEURL
+                  name: {{ include "geonode.configmap" . }}
+            - name: STATIC_ROOT
+              valueFrom:
+                configMapKeyRef:
+                  key: STATIC_ROOT
+                  name: {{ include "geonode.configmap" . }}
+            - name: TASTYPIE_APIKEY
+              valueFrom:
+                configMapKeyRef:
+                  key: TASTYPIE_APIKEY
+                  name: {{ include "geonode.configmap" . }}
+            - name: TIME_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: TIME_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+            - name: USER_ANALYTICS_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  key: USER_ANALYTICS_ENABLED
+                  name: {{ include "geonode.configmap" . }}
+            - name: USER_ANALYTICS_GZIP
+              valueFrom:
+                configMapKeyRef:
+                  key: USER_ANALYTICS_GZIP
+                  name: {{ include "geonode.configmap" . }}
+            - name: X_FRAME_OPTIONS
+              valueFrom:
+                configMapKeyRef:
+                  key: X_FRAME_OPTIONS
+                  name: {{ include "geonode.configmap" . }}
+            - name: outFormat
+              valueFrom:
+                configMapKeyRef:
+                  key: outFormat
+                  name: {{ include "geonode.configmap" . }}
+          image: {{ .Values.services.geoserver.image.repository }}:{{ .Values.services.geoserver.image.tag | default "latest" }}
+          imagePullPolicy: {{ .Values.services.geoserver.image.pullPolicy }}
+          name: {{ .Values.services.geoserver.name }}
+          livenessProbe:
+            exec:
+              command:
+                - |-
+                  curl -m 10 --fail --silent --write-out 'HTTP CODE : %{http_code}
+                  ' --output /dev/null http://localhost:8080/geoserver/ows
+            failureThreshold: 2
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            timeoutSeconds: 10
+          securityContext:
+            {{- toYaml .Values.services.geoserver.securityContext | nindent 12 }}
+          ports:
+            - name: http-alt
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.services.geoserver.resources | nindent 12 }}
+          {{- with .Values.volumes }}
+          volumeMounts:
+            - mountPath: {{ .statics.mountPath }}
+              name: statics
+            - mountPath: {{ .geoserverData.mountPath }}
+              name: geoserver-data-dir
+            - mountPath: {{ .backupRestore.mountPath }}
+              name: backup-restore
+            - mountPath: {{ .data.mountPath }}
+              name: data
+            - mountPath: {{ .tmp.mountPath }}
+              name: tmp
+          {{- end }}
+      initContainers:
+        - name: geoserver-data
+          image: {{ .Values.services.geoserver.image.dataRepository }}:{{ .Values.services.geoserver.image.tag | default "latest" }}
+          command: ['sh', '-c', "cp -rv ./data/* /geoserver_data/data/ && sleep 3"]
+          {{- with .Values.volumes }}
+          volumeMounts:
+            - mountPath: {{ .geoserverData.mountPath }}
+              name: geoserver-data-dir
+          {{- end }}
+        - name: wait-for-django
+          image: {{ .Values.services.db.image.repository }}:{{ .Values.services.db.image.tag | default "latest" }}
+          command: ['sh', '-c', "until wget --spider http://{{ .Values.services.django.name }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.services.django.servicePort | toString }}; do echo waiting for django; sleep 2; done"]
+      serviceAccountName: {{ include "geonode.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.services.geoserver.podSecurityContext | nindent 8 }}
+      restartPolicy: Always
+      {{- with .Values.services.geoserver.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.geoserver.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.geoserver.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        - name: statics
+          persistentVolumeClaim:
+            claimName: {{ .statics.name }}
+        - name: geoserver-data-dir
+          persistentVolumeClaim:
+            claimName: {{ .geoserverData.name }}
+        - name: backup-restore
+          persistentVolumeClaim:
+            claimName: {{ .backupRestore.name }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .data.name }}
+        - name: tmp
+          persistentVolumeClaim:
+            claimName: {{ .tmp.name }}
+      {{- end }}
+status: {}

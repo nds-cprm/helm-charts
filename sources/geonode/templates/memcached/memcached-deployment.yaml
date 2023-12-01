@@ -1,0 +1,74 @@
+{{- if .Values.services.memcached.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../geonode-stack.yml --controller deployment --provider kubernetes -c -o geonode
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  name: {{ .Values.services.memcached.name }}
+  labels:
+    {{- include "memcached.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "memcached.selectorLabels" . | nindent 6 }}
+  strategy: {}
+  template:
+    metadata:
+      {{- with .Values.services.memcached.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        io.kompose.network/geonode-default: "true"
+        {{- include "memcached.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - args:
+            - memcached
+            - $(MEMCACHED_OPTIONS)
+          env:
+            - name: MEMCACHED_OPTIONS
+              valueFrom:
+                configMapKeyRef:
+                  key: MEMCACHED_OPTIONS
+                  name: {{ include "geonode.configmap" . }}
+          image: {{ .Values.services.memcached.image.repository }}:{{ .Values.services.memcached.image.tag | default "latest" }}
+          imagePullPolicy: {{ .Values.services.memcached.image.pullPolicy }}
+          name: {{ .Values.services.memcached.name }}
+          livenessProbe:
+            exec:
+              command:
+                - nc -z 127.0.0.1 11211
+            failureThreshold: 5
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 30
+          securityContext:
+            {{- toYaml .Values.services.memcached.securityContext | nindent 12 }}
+          ports:
+            - name: memcached
+              containerPort: 11211
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.services.memcached.resources | nindent 12 }}
+      serviceAccountName: {{ include "geonode.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.services.memcached.podSecurityContext | nindent 8 }}
+      # restartPolicy: Always
+      {{- with .Values.services.memcached.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.memcached.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.services.memcached.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+status: {}
+{{- end }}

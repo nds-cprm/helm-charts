@@ -1,0 +1,546 @@
+# Default values for geonode.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: false
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: "geonode-sa"
+
+route:
+  enabled: true  
+
+# Não usar ingress por enquanto
+ingress:
+  enabled: false
+  # className: ""
+  # annotations: {}
+  #   # kubernetes.io/ingress.class: nginx
+  #   # kubernetes.io/tls-acme: "true"
+  # hosts:
+  #   - host: chart-example.local
+  #     paths:
+  #       - path: /
+  #         pathType: ImplementationSpecific
+  # tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# GeoNode Configs
+configs:
+  domain: apps-crc.testing
+  debug: false
+  forceReinit: false
+  invokeLogStdout: true
+  cacheBustingStaticEnabled: false
+  # TODO: Implementar recaptcha
+  recaptcha:
+    enabled: false
+    signupFormClass: geonode.people.forms.AllauthReCaptchaSignupForm
+  misc:
+    modifyTopicCategory: true
+    avatarGravatarSSL: true
+    exifEnabled: true
+    createLayer: true
+    favoriteEnabled: true
+  publishWorkflow:
+    resourcePublishing: false
+    adminModerateUploads: false
+  pagination:
+    clientResultsLimit: 5
+    apiLimitPerPage: 1000
+  documents:
+    # allowedTypes: ALLOWED_DOCUMENT_TYPES
+    maxSize: 200
+  uploader:
+    timeEnabled: true
+    mosaicEnabled: false
+    maxUploadSize: 5368709120
+    maxParallelUploadsPerUser: 5
+  email:
+    enabled: false
+    defaultFrom: admin@geonode.cluster.local
+  accessControl:
+    lockdownGeoNode: false
+    xFrameOptions: SAMEORIGIN
+    sessionExpiredControlEnabled: true
+    defaultAnnonymousViewPermission: true
+    defaultAnnonymousDownloadPermission: true
+    cors:
+      allowAllOrigins: true
+      geoserver:
+        enabled: true
+        allowedOrigins: '*'
+        allowedMethods: GET,POST,PUT,DELETE,HEAD,OPTIONS
+        allowedHeaders: '*'
+  registration:
+    account:
+      openSignUp: true
+      emailRequired: true
+      approvalRequired: false
+      confirmEmailOnGet: false
+      authenticationMethod: username_email
+      email:
+        verification: none
+        confirmationEmail: false
+        confirmationRequired: false
+    autoAssignRegisteredToMembersGroup: true
+    autoAssignRegisteredToContributorsGroup: true
+  monitoring:
+    enabled: false
+    dataTTL: 365
+    userAnalytics:
+      enabled: true
+      gzip: true 
+    centralizedDashboard: false
+    # serviceName: geonode-kubes
+    # hostname: geonode
+  haystack:
+    enabled: false
+    engine:
+      url: http://elasticsearch:9200/
+      indexName: haystack
+    resultsPerPage: 200
+  geoserver:      
+    ogcRequest:
+      timeout: 30
+      maxRetries: 1
+      backoffFactor: 0.3
+      poolMaxSize: 10
+      poolConnections: 10
+    javaOpts: |-
+      -Djava.awt.headless=true 
+      -Xms4G 
+      -Xmx4G 
+      -Dgwc.context.suffix=gwc 
+      -XX:+UnlockDiagnosticVMOptions 
+      -XX:+LogVMOutput 
+      -XX:LogFile=/var/log/jvm.log 
+      -XX:PerfDataSamplingInterval=500 
+      -XX:SoftRefLRUPolicyMSPerMB=36000 
+      -XX:-UseGCOverheadLimit 
+      -XX:ParallelGCThreads=4 
+      -Dfile.encoding=UTF8 
+      -Djavax.servlet.request.encoding=UTF-8 
+      -Djavax.servlet.response.encoding=UTF-8 
+      -Duser.timezone=GMT 
+      -Dorg.geotools.shapefile.datetime=false 
+      -DGS-SHAPEFILE-CHARSET=UTF-8 
+      -DGEOSERVER_CSRF_DISABLED=true 
+      -DPRINT_BASE_URL={geoserver_ui}/geoserver/pdf 
+      -DALLOW_ENV_PARAMETRIZATION=true 
+      -Xbootclasspath/a:/usr/local/tomcat/webapps/geoserver/WEB-INF/lib/marlin-0.9.3-Unsafe.jar 
+      -Dsun.java2d.renderer=org.marlin.pisces.MarlinRenderingEngine
+  # celery:
+  #   brokerURL:
+  #   scheduler:
+  ldap:
+    enabled: false
+  
+secrets:
+  django: M<]M/$CpU9YXR5nNmPqCj73UXi,n>)_X,[zRj6T=2Sj==Z}vWd
+  admin:
+    geonode:
+      email: admin@geonode.cluster.local
+      user: admin
+      password: geonodepwd
+    geoserver:
+      user: admin
+      password: geoserverpwd
+  postgres:
+    # host:
+    port: 5432
+    user: postgres
+    password: postgrespwd
+    maxAge: 0
+    timeOut: 5
+    db:
+      name: geonode
+      user: geonode
+      password: dbpwd
+      schema: public
+    geoDb:
+      name: geonode_data
+      user: geonode_data
+      password: geodbpwd
+      schema: public
+  email:
+    host: localhost
+    port: 25
+    user: null
+    password: null
+    useTLS: false
+    useSSL: false
+  oAuth2:
+    apiKey: ""
+    clientId: clientid
+    secret: clientsecret
+  apiKeys:
+    mapbox: null
+    bingMaps: null
+    googleMaps: null
+  recaptcha:
+    publicKey: null
+    privateKey: null
+  ldap:
+    serverURL: ldap://<the_ldap_server>
+    bind:
+      dn: uid=ldapinfo,cn=users,dc=ad,dc=example,dc=org
+      password: <asecretpassword>
+    search:
+      user:
+        dn: dc=ad,dc=example,dc=org
+        filterStr: (&(uid=%(user)s)(objectClass=person))
+      group:
+        dn: cn=groups,dc=ad,dc=example,dc=org
+        filterStr: (|(cn=abt1)(cn=abt2)(cn=abt3)(cn=abt4)(cn=abt5)(cn=abt6))
+        profileMemberAttr: uniqueMember
+
+
+
+
+# GeoNode Volumes
+volumes:
+  # nginxConfd:
+  #   name: nginx-confd
+  #   storage: 50Mi
+  #   mountPath: /etc/nginx
+  #   storageClassName: crc-csi-hostpath-provisioner
+  statics:
+    name: statics
+    volumeName: null
+    storage: 5Gi
+    mountPath: /mnt/volumes/statics
+    storageClassName: crc-csi-hostpath-provisioner
+  data:
+    name: data
+    volumeName: null
+    storage: 5Gi
+    mountPath: /data
+    storageClassName: crc-csi-hostpath-provisioner
+  geoserverData:
+    name: geoserver-data
+    volumeName: null
+    storage: 5Gi
+    mountPath: /geoserver_data/data
+    storageClassName: crc-csi-hostpath-provisioner
+  backupRestore:
+    name: backup-restore
+    volumeName: null
+    storage: 5Gi
+    mountPath: /backup_restore
+    storageClassName: crc-csi-hostpath-provisioner
+  tmp:
+    name: tmp
+    volumeName: null
+    storage: 5Gi
+    mountPath: /tmp
+    storageClassName: crc-csi-hostpath-provisioner
+
+# GeoNode Services
+services:
+  nginx:
+    name: geonode
+    image:
+      repository: geonode/nginx
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "1.25.1"
+
+    podAnnotations: {}
+
+    podSecurityContext: {}
+      # fsGroup: 2000
+
+    securityContext: 
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+      # runAsNonRoot: true
+      runAsUser: 0
+
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 200m
+      #   memory: 256Mi
+      # requests:
+      #   cpu: 100m
+      #   memory: 128Mi
+    
+    replicaCount: 1
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
+
+  django:
+    name: django
+    servicePort: 8000
+    image:
+      repository: geonode/geonode
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "latest-ubuntu-22.04"
+
+    podAnnotations: {}
+
+    podSecurityContext: {}
+      # fsGroup: 2000
+
+    securityContext: 
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+      # runAsNonRoot: true
+      runAsUser: 0
+
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 200m
+      #   memory: 1Gi
+      # requests:
+      #   cpu: 100m
+      #   memory: 512Mi
+    
+    replicaCount: 1
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
+
+  celery:
+    name: celery
+    image:
+      repository: geonode/geonode
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "latest-ubuntu-22.04"
+
+    podAnnotations: {}
+
+    podSecurityContext: {}
+      # fsGroup: 2000
+
+    securityContext: 
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+      # runAsNonRoot: true
+      runAsUser: 0
+
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 200m
+      #   memory: 1Gi
+      # requests:
+      #   cpu: 100m
+      #   memory: 512Mi
+    
+    replicaCount: 1
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
+
+  geoserver:
+    name: geoserver
+    servicePort: 8080
+    image:
+      repository: geonode/geoserver
+      dataRepository: geonode/geoserver_data
+      pullPolicy: IfNotPresent
+      # Overrides the image tag whose default is the chart appVersion.
+      tag: "2.23.0"
+
+    imagePullSecrets: []
+    nameOverride: ""
+    fullnameOverride: ""
+
+    podAnnotations: {}
+
+    podSecurityContext: {}
+      # fsGroup: 2000
+
+    securityContext: 
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+      # runAsNonRoot: true
+      runAsUser: 0
+
+    resources: {}
+      # We usually recommend not to specify default resources and to leave this as a conscious
+      # choice for the user. This also increases chances charts run on environments with little
+      # resources, such as Minikube. If you do want to specify resources, uncomment the following
+      # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+      # limits:
+      #   cpu: 1000m
+      #   memory: 2Gi
+      # requests:
+      #   cpu: 500m
+      #   memory: 1Gi
+    
+    replicaCount: 1
+
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 5
+      targetCPUUtilizationPercentage: 80
+      # targetMemoryUtilizationPercentage: 80
+
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
+
+  memcached:
+    enabled: true
+    servicePort: 11211
+    name: memcached
+    image:
+      repository: memcached
+      pullPolicy: IfNotPresent
+      tag: "1.6-alpine"
+    
+    resources: 
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+
+    podAnnotations: {}
+
+    podSecurityContext: {}
+      # fsGroup: 2000
+
+    securityContext:
+      runAsUser: 11211
+    
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
+
+  rabbitmq:
+    name: rabbitmq
+    servicePort: 5672
+    image:
+      repository: rabbitmq
+      pullPolicy: IfNotPresent
+      tag: "3.7-alpine"
+    
+    resources:
+      limits:
+        cpu: 200m
+        memory: 256Mi
+      requests:
+        cpu: 100m
+        memory: 128Mi
+    
+    volumes:
+      storage: 1Gi
+
+    podAnnotations: {}
+
+    podSecurityContext: {}
+      # fsGroup: 2000
+
+    securityContext:
+      runAsUser: 0
+    
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}
+
+  db:
+    name: postgis
+    external: false
+    servicePort: 5432
+    maxConnections: 200
+    image:
+      repository: geonode/postgis
+      pullPolicy: IfNotPresent
+      tag: "13"
+    
+    resources:
+      limits:
+        cpu: 500m
+        memory: 1Gi
+      requests:
+        cpu: 200m
+        memory: 256Mi
+    
+    volumes:
+      data:
+        storage: 1Gi
+      backups:
+        storage: 1Gi    
+
+    podAnnotations: {}
+
+    podSecurityContext: {}
+      # fsGroup: 2000
+
+    securityContext:
+      runAsUser: 0
+    
+    nodeSelector: {}
+
+    tolerations: []
+
+    affinity: {}

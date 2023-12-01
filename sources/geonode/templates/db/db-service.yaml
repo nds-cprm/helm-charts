@@ -1,0 +1,24 @@
+{{- if not .Values.services.db.external }}
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../geonode-stack.yml --controller deployment --provider kubernetes -c -o geonode
+    kompose.controller.type: statefulset
+    kompose.serviceaccount-name: geonode-sa
+    kompose.version: 1.28.0 (c4137012e)
+    kompose.volume.size: 1Gi
+  creationTimestamp: null
+  labels:
+    {{- include "db.labels" . | nindent 4 }}
+  name: {{ .Values.services.db.name }}
+spec:
+  ports:
+    - name: "postgresql-svc"
+      port: {{ .Values.services.db.servicePort }}
+      targetPort: postgresql
+  selector:
+    {{- include "db.selectorLabels" . | nindent 6 }}
+status:
+  loadBalancer: {}
+{{- end }}

@@ -1,0 +1,22 @@
+{{- if .Values.services.memcached.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f ../geonode-stack.yml --controller deployment --provider kubernetes -c -o geonode
+    kompose.serviceaccount-name: geonode-sa
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    {{- include "memcached.labels" . | nindent 4 }}
+  name: {{ .Values.services.memcached.name }}
+spec:
+  ports:
+    - name: memcached
+      port: {{ .Values.services.memcached.servicePort }}
+      targetPort: memcached
+  selector:
+    {{- include "memcached.selectorLabels" . | nindent 6 }}
+status:
+  loadBalancer: {}
+{{- end }}

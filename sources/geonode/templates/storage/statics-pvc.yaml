@@ -1,0 +1,21 @@
+{{- $pvcname :=  printf "%s-%s" .Release.Namespace .Release.Name -}}
+{{- with .Values.volumes }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: {{ .statics.name }}
+  name: {{ .statics.name }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  {{- if .statics.volumeName }}
+  volumeName: {{ .statics.volumeName }}
+  {{- end }}
+  storageClassName: {{ .statics.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .statics.storage }}
+status: {}
+{{- end }}
