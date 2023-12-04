@@ -32,7 +32,7 @@ spec:
         - args:
             - celery-cmd
           command:
-            - /usr/src/geonode/entrypoint.sh
+            - /usr/src/{{ .Values.configs.projectName }}/entrypoint.sh
           env:
             - name: ACCOUNT_APPROVAL_REQUIRED
               valueFrom:
@@ -273,6 +273,16 @@ spec:
               valueFrom:
                 configMapKeyRef:
                   key: DJANGO_EMAIL_USE_TLS
+                  name: {{ include "geonode.configmap" . }}
+            - name: LANGUAGE_CODE
+              valueFrom:
+                configMapKeyRef:
+                  key: LANGUAGE_CODE
+                  name: {{ include "geonode.configmap" . }}
+            - name: LANGUAGES
+              valueFrom:
+                configMapKeyRef:
+                  key: LANGUAGES
                   name: {{ include "geonode.configmap" . }}
             - name: DJANGO_SETTINGS_MODULE
               valueFrom:
