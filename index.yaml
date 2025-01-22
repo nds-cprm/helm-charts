@@ -790,4 +790,15 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/nginx-0.1.0/nginx-0.1.0.tgz
     version: 0.1.0
-generated: "2024-12-17T11:04:46.788374907Z"
+  sqlserver:
+  - apiVersion: v2
+    appVersion: 2022-latest
+    created: "2025-01-22T01:13:39.863109197Z"
+    description: A simple helm chart to run Microsoft SQL Server on kubernetes
+    digest: 84a0aefbe98f64a8454b776d659f4602d66df3c95b99c03f65f677c6578f067a
+    name: sqlserver
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/sqlserver-0.1.0/sqlserver-0.1.0.tgz
+    version: 0.1.0
+generated: "2025-01-22T01:13:39.863179097Z"
