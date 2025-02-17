@@ -1,3 +1,4 @@
+{{- $geonodeBaseDir := printf "/usr/src/%s" .Values.configs.projectName -}}
 apiVersion: batch/v1
 kind: CronJob
 metadata:
