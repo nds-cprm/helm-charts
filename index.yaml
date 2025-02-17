@@ -126,6 +126,37 @@ entries:
   geonode:
   - apiVersion: v2
     appVersion: 4.2.4
+    created: "2025-02-17T23:53:32.430664185Z"
+    description: 'GeoNode is a web-based application and platform for developing geospatial
+      information  systems (GIS) and for deploying spatial data infrastructures (SDI). '
+    digest: 6a00e174b0ed47d680fd56804418802dd6e999ad9e66e7049786dae4b74a4c57
+    home: https://geonode.org/
+    icon: https://avatars.githubusercontent.com/u/132843?s=200&v=4
+    keywords:
+    - GIS
+    - FOSS4G
+    - webmap
+    - WMS
+    - WFS
+    - WCS
+    - SDI
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+      url: https://www.sgb.gov.br
+    name: geonode
+    sources:
+    - https://github.com/GeoNode/geonode/
+    - https://github.com/GeoNode/geonode-docker
+    - https://github.com/GeoNode/geonode-mapstore-client
+    - https://github.com/GeoNode/geonode-importer
+    - https://github.com/GeoNode/geonode-project
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/geonode-0.3.12/geonode-0.3.12.tgz
+    version: 0.3.12
+  - apiVersion: v2
+    appVersion: 4.2.4
     created: "2024-08-26T18:15:23.055089671Z"
     description: 'GeoNode is a web-based application and platform for developing geospatial
       information  systems (GIS) and for deploying spatial data infrastructures (SDI). '
@@ -801,4 +832,4 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/sqlserver-0.1.0/sqlserver-0.1.0.tgz
     version: 0.1.0
-generated: "2025-01-22T01:13:39.863179097Z"
+generated: "2025-02-17T23:53:32.430798637Z"
