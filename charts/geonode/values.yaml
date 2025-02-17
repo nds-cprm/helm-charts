@@ -219,6 +219,13 @@ configs:
         dn: cn=groups,dc=ad,dc=example,dc=org
         filterStr: (|(cn=abt1)(cn=abt2)(cn=abt3)(cn=abt4)(cn=abt5)(cn=abt6))
         profileMemberAttr: uniqueMember
+  memcached:
+    enabled: false
+    backend: ''
+    location: ''
+    lockExpire: null
+    lockTimeout: null
+    options: ''
   
 # GeoNode Volumes
 volumes:
@@ -460,7 +467,6 @@ services:
     affinity: {}
 
   memcached:
-    enabled: true
     servicePort: 11211
     name: memcached
     image:

@@ -155,7 +155,9 @@ data:
   CACHE_BUSTING_STATIC_ENABLED: {{ .Values.configs.cacheBustingStaticEnabled | toString | title | quote }}
 
   # Memcached - moved to a secret
-  MEMCACHED_ENABLED: {{ .Values.services.memcached.enabled | toString | title | quote }}
+  {{- if .Values.configs.memcached }}
+  MEMCACHED_ENABLED: {{ .Values.configs.memcached.enabled | toString | title | quote }}
+  {{- end }}
 
   MAX_DOCUMENT_SIZE: {{ .Values.configs.documents.maxSize | quote }}
   CLIENT_RESULTS_LIMIT: {{ .Values.configs.pagination.clientResultsLimit | quote }}
