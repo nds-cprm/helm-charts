@@ -31,7 +31,11 @@ ingress:
 configs:
   projectName: geonode
   domain: apps-crc.testing
-  languages: {}
+  languages:
+    - name: English
+      code: en-us
+    - name: Italiano
+      code: it-it
   languageCode: "en-us"
   debug: false
   forceReinit: false

@@ -18,8 +18,10 @@ data:
   INVOKE_LOG_STDOUT: {{ .Values.configs.invokeLogStdout | toString | title | quote }}
 
   # Django
-  LANGUAGE_CODE: {{ .Values.configs.languageCode }}
-  LANGUAGES: (('en-us','English'),('es-es','Espanol'))
+  {{- if .Values.configs.languages }}
+  LANGUAGES: {{ range .Values.configs.languages -}}('{{ .code }}', '{{ .name }}'), {{ end }}
+  {{- end }}
+  LANGUAGE_CODE: {{ .Values.configs.languageCode }}  
   
   DJANGO_SETTINGS_MODULE: {{ printf "%s.%s" .Values.configs.projectName ( .Values.configs.django.settings.override | ternary "local_settings" "settings" ) }}
   GEONODE_INSTANCE_NAME: geonode # serviço (docker, k8s) onde está o NGINX
