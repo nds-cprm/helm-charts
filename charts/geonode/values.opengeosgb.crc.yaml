@@ -1,0 +1,49 @@
+serviceAccount:
+  name: geonode 
+services:
+  nginx:
+    config:
+      resolver: 10.217.4.10
+    image:
+      repository: ndscprm/nginx
+      tag: 1.25.5-geonode
+  django:
+    image: 
+      repository: ndscprm/geonode
+  celery:
+    image:
+      repository: ndscprm/geonode
+  geoserver:
+    image:
+      app:
+        repository: ndscprm/geoserver
+        tag: 2.24.4-v1-geonode
+      data:
+        repository: ndscprm/geoserver_data
+        tag: 2.24.4-v1-geonode
+  postgis:
+    image:
+      repository: ndscprm/postgis
+      tag: 13-3.1-alpine-geonode
+configs:
+  projectName: opengeosgb
+  languages:
+    - name: English
+      code: en-us
+    - name: Espanol
+      code: es-es
+    - name: Portugues do Brasil
+      code: pt-br
+  languageCode: "pt-br"
+  admin:
+    password: 123456
+  oAuth2:
+    apiKey: abcderfhijklmnopqrstuvwxyz
+    clientId: abc
+    secret: 1234567890
+  django:
+    secretKey: M<]M/$CpU9YXR5nNmPqCj73UXi,n>) X,[zRj6T=2Sj==Z}vWd
+  # mail:
+  #   enabled: true
+  memcached:
+    enabled: true
