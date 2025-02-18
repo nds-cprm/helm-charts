@@ -1,3 +1,4 @@
+{{- if .Values.services.django.uwsgi.override }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -48,3 +49,4 @@ data:
 
     # daemonize = /var/log/uwsgi/geonode.log
     # cron = -1 -1 -1 -1 -1 /usr/local/bin/python /usr/src/geonode/manage.py collect_metrics -n
+{{- end }}
