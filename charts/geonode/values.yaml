@@ -315,7 +315,7 @@ services:
     name: django
     servicePort: 8000
     uwsgi:
-      override: true
+      override: false
     image:
       repository: geonode/geonode
       pullPolicy: IfNotPresent
