@@ -4,6 +4,33 @@ services:
   nginx:
     config:
       resolver: 10.217.4.10
+    image:
+      repository: ndscprm/nginx
+      tag: dev
+    # securityContext:
+    #   runAsNonRoot: true
+  django:
+    image: 
+      repository: ndscprm/geonode
+      tag: dev
+    # securityContext:
+    #   runAsNonRoot: true
+  celery:
+    image:
+      repository: ndscprm/geonode  
+      tag: dev
+    # securityContext:
+    #   runAsNonRoot: true
+  geoserver:
+    image:
+      app:
+        repository: ndscprm/geoserver
+        tag: dev
+      data:
+        repository: ndscprm/geoserver_data
+        tag: dev
+    # securityContext:
+    #   runAsNonRoot: true
 configs:
   admin:
     password: 123456
