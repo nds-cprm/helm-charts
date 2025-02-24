@@ -1,6 +1,6 @@
 apiVersion: v2
 name: geonode
-version: 0.4.0
+version: 0.4.1
 description: >
   GeoNode is a web-based application and platform for developing geospatial information 
   systems (GIS) and for deploying spatial data infrastructures (SDI).
@@ -26,3 +26,8 @@ maintainers:
     url: https://www.sgb.gov.br
 icon: https://avatars.githubusercontent.com/u/132843?s=200&v=4
 appVersion: "4.4.1"
+dependencies:
+  - name: rabbitmq
+    version: 15.3.2
+    repository: https://charts.bitnami.com/bitnami
+    condition: rabbitmq.enabled

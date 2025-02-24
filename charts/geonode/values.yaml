@@ -276,13 +276,13 @@ services:
     podSecurityContext: {}
       # fsGroup: 2000
 
-    securityContext: 
+    securityContext: {}
       # capabilities:
       #   drop:
       #   - ALL
       # readOnlyRootFilesystem: true
       # runAsNonRoot: true
-      runAsUser: 0
+      # runAsUser: 0
 
     resources: {}
       # We usually recommend not to specify default resources and to leave this as a conscious
@@ -327,13 +327,13 @@ services:
     podSecurityContext: {}
       # fsGroup: 2000
 
-    securityContext: 
+    securityContext: {}
       # capabilities:
       #   drop:
       #   - ALL
       # readOnlyRootFilesystem: true
       # runAsNonRoot: true
-      runAsUser: 0
+      # runAsUser: 0
 
     resources: {}
       # We usually recommend not to specify default resources and to leave this as a conscious
@@ -375,13 +375,13 @@ services:
     podSecurityContext: {}
       # fsGroup: 2000
 
-    securityContext: 
+    securityContext: {}
       # capabilities:
       #   drop:
       #   - ALL
       # readOnlyRootFilesystem: true
       # runAsNonRoot: true
-      runAsUser: 0
+      # runAsUser: 0
 
     resources: {}
       # We usually recommend not to specify default resources and to leave this as a conscious
@@ -434,13 +434,13 @@ services:
     podSecurityContext: {}
       # fsGroup: 2000
 
-    securityContext: 
+    securityContext: {}
       # capabilities:
       #   drop:
       #   - ALL
       # readOnlyRootFilesystem: true
       # runAsNonRoot: true
-      runAsUser: 0
+      # runAsUser: 0
 
     resources: {}
       # We usually recommend not to specify default resources and to leave this as a conscious
@@ -484,36 +484,8 @@ services:
     podSecurityContext: {}
       # fsGroup: 2000
 
-    securityContext:
-      runAsUser: 11211
-    
-    nodeSelector: {}
-
-    tolerations: []
-
-    affinity: {}
-
-  rabbitmq:
-    name: rabbitmq
-    servicePort: 5672
-    image:
-      repository: rabbitmq
-      pullPolicy: IfNotPresent
-      tag: "3.7-alpine"
-    
-    resources: {}
-    
-    volumes:
-      storage: 1Gi
-      storageClassName:  "" # Change
-
-    podAnnotations: {}
-
-    podSecurityContext: {}
-      # fsGroup: 2000
-
-    securityContext:
-      runAsUser: 0
+    securityContext: {}
+      # runAsUser: 11211
     
     nodeSelector: {}
 
@@ -554,3 +526,11 @@ services:
     tolerations: []
 
     affinity: {}
+
+rabbitmq:
+  enabled: true
+  auth:
+    username: blah
+    password: blah
+    updatePassword: false
+    erlangCookie: blah

@@ -31,7 +31,11 @@ data:
   # #################
   # Postgres in geonode-postgres-secrets.yaml
 
-  BROKER_URL: {{ include "rabbitmq.internalPath" . }}
+  {{- if .Values.rabbitmq.enabled }}
+  BROKER_URL: amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local:5672
+  {{- else }}
+  BROKER_URL: {{ .Values.configs.celery.brokerURL }}
+  {{- end }}
   CELERY_BEAT_SCHEDULER: celery.beat:PersistentScheduler
   ASYNC_SIGNALS: "True"
 
