@@ -1,5 +1,13 @@
 # Celery helpers
 {{/*
+Create a default fully qualified app name.
+*/}}
+{{- define "celery.fullname" -}}
+{{- $name := ( include "geonode.fullname" . ) | trunc 57 | trimSuffix "-" -}}
+{{- printf "%s-celery" $name }}
+{{- end }}
+
+{{/*
 Celery Common labels
 */}}
 {{- define "celery.labels" -}}

@@ -1,7 +1,8 @@
+{{- $fullName := include "geoserver.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.services.geoserver.name }}
+  name: {{ $fullName }}
   labels:
     {{- include "geoserver.labels" . | nindent 4 }}
 spec:
@@ -22,7 +23,7 @@ spec:
         {{- include "geoserver.selectorLabels" . | nindent 8 }}
     spec:
       containers:
-        - name: {{ .Values.services.geoserver.name }}
+        - name: {{ $fullName }}
           {{- with .Values.services.geoserver.image.app }}
           image: {{ .repository }}:{{ .tag }}
           imagePullPolicy: {{ .pullPolicy }}

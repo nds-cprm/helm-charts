@@ -1,8 +1,9 @@
 {{- $geonodeBaseDir := printf "/usr/src/%s" .Values.configs.projectName -}}
+{{- $fullName := include "django.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.services.django.name }}
+  name: {{ $fullName }}
   labels:
     {{- include "django.labels" . | nindent 4 }}
 spec:
@@ -63,7 +64,7 @@ spec:
           image: {{ .repository }}:{{ .tag | default $.Chart.AppVersion }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
-          name: {{ .Values.services.django.name }}
+          name: {{ $fullName }}
           # livenessProbe:
           #   tcpSocket:
           #     port: wsgi

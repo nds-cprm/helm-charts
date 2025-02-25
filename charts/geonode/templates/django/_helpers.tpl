@@ -1,5 +1,13 @@
 # Django helpers
 {{/*
+Create a default fully qualified app name.
+*/}}
+{{- define "django.fullname" -}}
+{{- $name := ( include "geonode.fullname" . ) | trunc 57 | trimSuffix "-" -}}
+{{- printf "%s-django" $name }}
+{{- end }}
+
+{{/*
 Django Common labels
 */}}
 {{- define "django.labels" -}}
@@ -18,7 +26,7 @@ app.kubernetes.io/part-of: geonode
 Django Selector labels
 */}}
 {{- define "django.selectorLabels" -}}
-app.kubernetes.io/name: {{ .Values.services.django.name }}
+app.kubernetes.io/name: django
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
@@ -26,7 +34,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Django Service - hostname
 */}}
 {{- define "django.hostname" -}}
-{{- printf "%s.%s.svc.cluster.local" .Values.services.django.name .Release.Namespace -}}
+{{- printf "%s.%s.svc.cluster.local" ( include "django.fullname" . ) .Release.Namespace -}}
 {{- end }}
 
 {{- define "django.internalPath" -}}

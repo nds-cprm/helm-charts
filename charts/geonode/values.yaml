@@ -311,7 +311,6 @@ services:
     affinity: {}
 
   django:
-    name: django
     servicePort: 8000
     uwsgi:
       override: false
@@ -362,7 +361,6 @@ services:
     affinity: {}
 
   celery:
-    name: celery
     image:
       repository: geonode/geonode
       pullPolicy: IfNotPresent
@@ -410,7 +408,6 @@ services:
     affinity: {}
 
   geoserver:
-    name: geoserver
     servicePort: 8080
     image:
       app:

@@ -1,4 +1,12 @@
 {{/*
+Create a default fully qualified app name.
+*/}}
+{{- define "geoserver.fullname" -}}
+{{- $name := ( include "geonode.fullname" . ) | trunc 57 | trimSuffix "-" -}}
+{{- printf "%s-geoserver" $name }}
+{{- end }}
+
+{{/*
 Geoserver Common labels
 */}}
 {{- define "geoserver.labels" -}}
@@ -17,7 +25,7 @@ app.kubernetes.io/part-of: geonode
 Geoserver Selector labels
 */}}
 {{- define "geoserver.selectorLabels" -}}
-app.kubernetes.io/name: {{ .Values.services.geoserver.name }}
+app.kubernetes.io/name: geoserver
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
@@ -25,7 +33,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 Geoserver Service - hostname
 */}}
 {{- define "geoserver.hostname" -}}
-{{- printf "%s.%s.svc.cluster.local" .Values.services.geoserver.name .Release.Namespace -}}
+{{- printf "%s.%s.svc.cluster.local" ( include "geoserver.fullname" . ) .Release.Namespace -}}
 {{- end }}
 
 {{- define "geoserver.internalPath" -}}

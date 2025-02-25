@@ -3,7 +3,7 @@ kind: Service
 metadata:
   labels:
     {{- include "django.labels" . | nindent 4 }}
-  name: {{ .Values.services.django.name }}
+  name: {{ include "django.fullname" . }}
 spec:
   ports:
     - name: wsgi

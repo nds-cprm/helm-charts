@@ -3,7 +3,7 @@ kind: Service
 metadata:
   labels:
     {{- include "geoserver.labels" . | nindent 4 }}
-  name: {{ .Values.services.geoserver.name }}
+  name: {{ include "geoserver.fullname" . }}
 spec:
   ports:
     - name: http-alt

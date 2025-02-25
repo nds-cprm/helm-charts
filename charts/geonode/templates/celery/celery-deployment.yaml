@@ -1,8 +1,9 @@
 {{- $geonodeBaseDir := printf "/usr/src/%s" .Values.configs.projectName -}}
+{{- $fullName := include "celery.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.services.celery.name }}
+  name: {{ $fullName }}
   labels:
     {{- include "celery.labels" . | nindent 4 }}
 spec:
@@ -59,7 +60,7 @@ spec:
           image: {{ .repository }}:{{ .tag | default $.Chart.AppVersion }}
           imagePullPolicy: {{ .pullPolicy }}
           {{- end }}
-          name: {{ .Values.services.celery.name }}
+          name: {{ $fullName }}
           securityContext:
             {{- toYaml .Values.services.celery.securityContext | nindent 12 }}
           resources:
