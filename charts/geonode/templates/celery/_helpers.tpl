@@ -26,7 +26,7 @@ app.kubernetes.io/part-of: geonode
 Celery Selector labels
 */}}
 {{- define "celery.selectorLabels" -}}
-app.kubernetes.io/name: {{ .Values.services.celery.name }}
+app.kubernetes.io/name: celery
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
