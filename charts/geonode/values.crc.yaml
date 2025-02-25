@@ -7,18 +7,21 @@ services:
     image:
       repository: ndscprm/nginx
       tag: dev
+      pullPolicy: Always
     # securityContext:
     #   runAsNonRoot: true
   django:
     image: 
       repository: ndscprm/geonode
       tag: dev
+      pullPolicy: Always
     # securityContext:
     #   runAsNonRoot: true
   celery:
     image:
       repository: ndscprm/geonode  
       tag: dev
+      pullPolicy: Always
     # securityContext:
     #   runAsNonRoot: true
   geoserver:
@@ -26,9 +29,11 @@ services:
       app:
         repository: ndscprm/geoserver
         tag: dev
+        pullPolicy: Always
       data:
         repository: ndscprm/geoserver_data
         tag: dev
+        pullPolicy: Always
     # securityContext:
     #   runAsNonRoot: true
 configs:
@@ -42,6 +47,10 @@ configs:
     secretKey: M<]M/$CpU9YXR5nNmPqCj73UXi,n>) X,[zRj6T=2Sj==Z}vWd
   # mail:
   #   enabled: true
-  memcached:
-    enabled: true
+  # memcached:
+  #   location: "aaa"
+
+# memcached:
+#   enabled: false
+
 
