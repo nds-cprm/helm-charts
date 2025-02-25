@@ -224,7 +224,6 @@ configs:
         filterStr: (|(cn=abt1)(cn=abt2)(cn=abt3)(cn=abt4)(cn=abt5)(cn=abt6))
         profileMemberAttr: uniqueMember
   memcached:
-    enabled: false
     backend: ''
     location: ''
     lockExpire: null
@@ -469,64 +468,6 @@ services:
 
     affinity: {}
 
-  memcached:
-    servicePort: 11211
-    name: memcached
-    image:
-      repository: memcached
-      pullPolicy: IfNotPresent
-      tag: "1.6-alpine"
-    
-    resources: {}
-
-    podAnnotations: {}
-
-    podSecurityContext: {}
-      # fsGroup: 2000
-
-    securityContext: {}
-      # runAsUser: 11211
-    
-    nodeSelector: {}
-
-    tolerations: []
-
-    affinity: {}
-
-  db:
-    external: false
-    serverParams:
-      user: postgres
-      password: postgrespwd
-      maxConnections: 200
-    image:
-      repository: geonode/postgis
-      pullPolicy: IfNotPresent
-      tag: "15.3-latest"    
-    resources: {}
-    
-    volumes:
-      data:
-        storageClassName: "" # Change
-        storage: 1Gi
-      backups:
-        storageClassName: "" # Change
-        storage: 1Gi    
-
-    podAnnotations: {}
-
-    podSecurityContext: {}
-      # fsGroup: 2000
-
-    securityContext:
-      runAsUser: 0
-    
-    nodeSelector: {}
-
-    tolerations: []
-
-    affinity: {}
-
 rabbitmq:
   enabled: true
   auth:
@@ -534,3 +475,20 @@ rabbitmq:
     password: blah
     updatePassword: false
     erlangCookie: blah
+
+memcached:
+  enabled: true
+  auth:
+    enabled: false
+    username: blah
+    password: blah
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: postgres
+  primary:
+    extraEnvVarsSecret: geonode-database
+    initdb: 
+      scriptsConfigMap: opengeosgb-geonode-initdb
+

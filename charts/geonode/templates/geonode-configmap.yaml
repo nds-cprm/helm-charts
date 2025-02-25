@@ -32,7 +32,7 @@ data:
   # Postgres in geonode-postgres-secrets.yaml
 
   {{- if .Values.rabbitmq.enabled }}
-  BROKER_URL: amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local:5672
+  BROKER_URL: amqp://{{ .Values.rabbitmq.auth.username }}:{{ .Values.rabbitmq.auth.password }}@{{ .Release.Name }}-rabbitmq.{{ .Release.Namespace }}.svc.cluster.local:{{ default "5672" .Values.rabbitmq.service.ports.amqp }}
   {{- else }}
   BROKER_URL: {{ .Values.configs.celery.brokerURL }}
   {{- end }}
@@ -161,9 +161,7 @@ data:
   CACHE_BUSTING_STATIC_ENABLED: {{ .Values.configs.cacheBustingStaticEnabled | toString | title | quote }}
 
   # Memcached - moved to a secret
-  {{- if .Values.configs.memcached }}
-  MEMCACHED_ENABLED: {{ .Values.configs.memcached.enabled | toString | title | quote }}
-  {{- end }}
+  MEMCACHED_ENABLED: {{ or .Values.memcached.enabled ( not (empty .Values.configs.memcached.location) ) | toString | title | quote }}
 
   MAX_DOCUMENT_SIZE: {{ .Values.configs.documents.maxSize | quote }}
   CLIENT_RESULTS_LIMIT: {{ .Values.configs.pagination.clientResultsLimit | quote }}

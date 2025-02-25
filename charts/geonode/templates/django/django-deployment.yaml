@@ -55,7 +55,7 @@ spec:
             - secretRef:
                 name: {{ include "geonode.ldap-secret" . }}
             {{- end }}
-            {{- if .Values.configs.memcached.enabled }}
+            {{- if or .Values.memcached.enabled ( not (empty .Values.configs.memcached.location) ) }}
             - secretRef:
                 name: {{ include "geonode.memcached-secret" . }}
             {{- end }}
@@ -113,12 +113,12 @@ spec:
               readOnly: true
             {{- end }}
       initContainers:
-        {{- $dbHost := include "db.hostname" . -}}
-        {{- $dbPort := .Values.configs.postgres.port -}}
-        {{- with .Values.services.db }}
+        {{- $dbHost := (include "geonode.db.hostname" .) }}
+        {{- $dbPort := default "5432" .Values.configs.postgres.port }}
+        {{- with .Values.services.django.image }}
         - name: wait-for-dbs          
-          image: {{ .image.repository }}:{{ .image.tag }}
-          imagePullPolicy: {{ .image.pullPolicy }}
+          image: {{ .repository }}:{{ .tag | default $.Chart.AppVersion }}
+          imagePullPolicy: {{ .pullPolicy }}
           command:
             - sh
             - '-c'

@@ -138,3 +138,30 @@ Define Secret names
 {{- define "geonode.ldap-secret" -}}
 {{- printf "%s-ldap" (include "geonode.name" .) }}
 {{- end }}
+
+{{/*
+DB Service - hostname
+*/}}
+{{- define "geonode.db.hostname" -}}
+{{- if not .Values.postgresql.enabled }}
+{{- $dbHost := .Values.configs.postgres.host -}}
+{{- if not $dbHost }}
+{{- fail "If services.db.external is True, you must set a valid PostgreSQL hostname" -}}
+{{- end }} 
+{{- $dbHost }}
+{{- else -}}
+{{- printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace -}}
+{{- end }}
+{{- end }}
+
+{{/*
+Memcached service - hostname
+*/}}
+{{- define "geonode.memcached.hostname" -}}
+{{- if not .Values.memcached.enabled }}
+{{- .Values.configs.memcached.location -}}
+{{- else -}}
+{{ $memcachedPort := ( default 11211 $.Values.memcached.service.ports.memcached ) | toString }}
+{{- printf "%s-memcached.%s.svc.cluster.local:%s" .Release.Name .Release.Namespace $memcachedPort -}}
+{{- end }}
+{{- end }}

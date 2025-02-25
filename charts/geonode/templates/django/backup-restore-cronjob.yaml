@@ -60,7 +60,7 @@ spec:
                 - secretRef:
                     name: {{ include "geonode.ldap-secret" . }}
                 {{- end }}
-                {{- if .Values.configs.memcached.enabled }}
+                {{- if or .Values.memcached.enabled ( not (empty .Values.configs.memcached.location) ) }}
                 - secretRef:
                     name: {{ include "geonode.memcached-secret" . }}
                 {{- end }}

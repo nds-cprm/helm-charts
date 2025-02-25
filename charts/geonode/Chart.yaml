@@ -31,3 +31,11 @@ dependencies:
     version: 15.3.2
     repository: https://charts.bitnami.com/bitnami
     condition: rabbitmq.enabled
+  - name: postgresql  
+    version: 16.4.14
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled
+  - name: memcached
+    version: 7.6.5
+    repository: https://charts.bitnami.com/bitnami
+    condition: memcached.enabled
