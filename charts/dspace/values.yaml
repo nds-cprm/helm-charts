@@ -63,13 +63,13 @@ services:
       tag: ""
     podSecurityContext: {}
       # fsGroup: 2000
-    securityContext: 
+    securityContext: {}
       # capabilities:
       #   drop:
       #   - ALL
       # readOnlyRootFilesystem: true
       # runAsNonRoot: true
-      runAsUser: 0
+      # runAsUser: 0
     resources: {}
       # limits:
       #   cpu: 100m
@@ -81,10 +81,18 @@ services:
     tolerations: []
     affinity: {}
     pvc:
-      enabled: true
-      className: ""
-      size: 1Gi
-      accessMode: ReadWriteOnce
+      assetstore:
+        enabled: true
+        className: ""
+        size: 1Gi
+        accessMode: ReadWriteOnce
+      config:
+        enabled: true
+        className: ""
+        size: 1Gi
+        accessMode: ReadWriteOnce
+
+      
 
   frontend:
     replicaCount: 1
@@ -103,13 +111,13 @@ services:
       tag: ""
     podSecurityContext: {}
       # fsGroup: 2000
-    securityContext: 
+    securityContext: {}
       # capabilities:
       #   drop:
       #   - ALL
       # readOnlyRootFilesystem: true
       # runAsNonRoot: true
-      runAsUser: 0
+      # runAsUser: 0
     resources: {}
       # limits:
       #   cpu: 100m
@@ -140,6 +148,15 @@ services:
       repository: docker.io/dspace/dspace-solr
       pullPolicy: IfNotPresent
       tag: ""
+    securityContext: # {}
+      # capabilities:
+      #   drop:
+      #   - ALL
+      # readOnlyRootFilesystem: true
+      # runAsNonRoot: true
+      runAsUser: 8983
+    podSecurityContext:
+      fsGroup: 8983
     pvc:
       # className: ""
       size: 1Gi  
