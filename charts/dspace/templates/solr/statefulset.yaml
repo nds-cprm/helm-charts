@@ -22,17 +22,21 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "dspace.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.services.solr.podSecurityContext | nindent 8 }}
       terminationGracePeriodSeconds: 10
       containers:
         - name: dspace-solr
           image: "{{ .Values.services.solr.image.repository }}:{{ .Values.services.solr.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.services.solr.image.pullPolicy }}
+          securityContext:
+            {{- toYaml .Values.services.solr.securityContext | nindent 12 }}
           workingDir: /var/solr/data
           ports:
             - containerPort: 8983
               name: solr-port
           volumeMounts:
-            - name: {{ $fullName }}
+            - name: data
               mountPath: /var/solr/data
           # TODO: Move commands before exec tomcat to initContainers
           command: ["/bin/bash"]
@@ -51,7 +55,7 @@ spec:
               exec solr -f
   volumeClaimTemplates:
     - metadata:
-        name: {{ $fullName }}
+        name: data
       spec:
         accessModes:
           - ReadWriteOnce

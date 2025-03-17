@@ -33,7 +33,7 @@ spec:
             - containerPort: 5432
               name: db-port
           volumeMounts:
-            - name: {{ $fullName }}
+            - name: data
               mountPath: /postgres
           env:
             - name: PGDATA
@@ -48,7 +48,7 @@ spec:
             {{- end }}
   volumeClaimTemplates:
     - metadata:
-        name: {{ $fullName }}
+        name: data
       spec:
         accessModes:
           - ReadWriteOnce
