@@ -83,6 +83,20 @@ spec:
               catalina.sh run
           resources:
             {{- toYaml .Values.services.backend.resources | nindent 12 }}
+      # Copy default config dir to a volume, if enabled
+      {{- if .Values.services.backend.pvc.config.enabled }}
+      initContainers:
+        - name: copy-dspace-config
+          image: "{{ .Values.services.backend.image.repository }}:{{ .Values.services.backend.image.tag | default .Chart.AppVersion }}"
+          command: ['/bin/sh']
+          args: 
+            - '-c' 
+            - |
+              cp -rpuv {{ printf "%s/config" .Values.config.dir }}/* /mnt/config
+          volumeMounts:
+            - mountPath: /mnt/config
+              name: dspace-config
+        {{- end }}
       {{- with .Values.services.backend.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
