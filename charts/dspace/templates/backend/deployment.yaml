@@ -31,10 +31,15 @@ spec:
       securityContext:
         {{- toYaml .Values.services.backend.podSecurityContext | nindent 8 }}
       volumes:
-        {{- if .Values.services.backend.pvc.enabled }}
-        - name: dspace-data
+        {{- if .Values.services.backend.pvc.assetstore.enabled }}
+        - name: dspace-assetstore
           persistentVolumeClaim:
-            claimName: {{ include "dspace.fullname" . }}-backend
+            claimName: {{ include "dspace.backendFullname" . }}-assetstore
+        {{- end }}
+        {{- if .Values.services.backend.pvc.config.enabled }}
+        - name: dspace-config
+          persistentVolumeClaim:
+            claimName: {{ include "dspace.backendFullname" . }}-config
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}-backend
@@ -52,9 +57,13 @@ spec:
             - secretRef:
                 name: {{ include "dspace.backendFullname" . }}-credentials
           volumeMounts:
-            {{- if .Values.services.backend.pvc.enabled }}
+            {{- if .Values.services.backend.pvc.assetstore.enabled }}
             - mountPath: {{ printf "%s/assetstore" .Values.config.dir }}
-              name: dspace-data
+              name: dspace-assetstore
+            {{- end }}
+            {{- if .Values.services.backend.pvc.config.enabled }}
+            - mountPath: {{ printf "%s/config" .Values.config.dir }}
+              name: dspace-config
             {{- end }}
           livenessProbe:
             # https://wiki.lyrasis.org/pages/viewpage.action?pageId=289079751

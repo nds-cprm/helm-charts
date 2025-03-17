@@ -1,13 +1,35 @@
-{{- if .Values.services.backend.pvc.enabled -}}
+{{- if .Values.services.backend.pvc.assetstore.enabled -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "dspace.backendFullname" . }}
+  name: {{ include "dspace.backendFullname" . }}-assetstore
   labels:
     {{- include "dspace.labels" . | nindent 4 }}
     app.kubernetes.io/component: backend
 spec:
-  {{- with .Values.services.backend.pvc }}
+  {{- with .Values.services.backend.pvc.assetstore }}
+  accessModes:
+    - {{ .accessMode }}
+  volumeMode: Filesystem
+  {{- if .className }}
+  storageClassName: {{ .className }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .size }}
+  {{- end }}
+{{- end }}
+---
+{{- if .Values.services.backend.pvc.config.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "dspace.backendFullname" . }}-config
+  labels:
+    {{- include "dspace.labels" . | nindent 4 }}
+    app.kubernetes.io/component: backend
+spec:
+  {{- with .Values.services.backend.pvc.config }}
   accessModes:
     - {{ .accessMode }}
   volumeMode: Filesystem
