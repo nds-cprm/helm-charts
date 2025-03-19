@@ -42,6 +42,7 @@ config:
   jvm:
     CATALINA_OPTS: "-Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
   solr:
+    external: false
     server: ""
   # proxiesTrustedIPRanges: '172.23.0'
 
@@ -90,9 +91,7 @@ services:
         enabled: true
         className: ""
         size: 1Gi
-        accessMode: ReadWriteOnce
-
-      
+        accessMode: ReadWriteOnce    
 
   frontend:
     replicaCount: 1
@@ -143,12 +142,11 @@ services:
     imagePullSecrets: []
 
   solr:
-    enabled: true
     image:
       repository: docker.io/dspace/dspace-solr
       pullPolicy: IfNotPresent
       tag: ""
-    securityContext: # {}
+    securityContext: 
       # capabilities:
       #   drop:
       #   - ALL

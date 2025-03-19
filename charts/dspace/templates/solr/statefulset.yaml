@@ -1,4 +1,4 @@
-{{- if .Values.services.solr.enabled }}
+{{- if not .Values.config.solr.external }}
 {{- $fullName := (include "dspace.solrFullname" .) }}
 apiVersion: apps/v1
 kind: StatefulSet
