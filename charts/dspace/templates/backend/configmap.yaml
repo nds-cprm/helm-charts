@@ -1,4 +1,4 @@
-{{- $solrHost := printf "http://%s:8983/solr" (include "dspace.solrFullname" .) -}}
+{{- $solrHost := printf "http://%s.%s.svc.cluster.local:8983/solr" (include "dspace.solrFullname" .) .Release.Namespace -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
