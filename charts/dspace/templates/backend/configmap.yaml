@@ -1,4 +1,3 @@
-{{- $solrHost := printf "http://%s.%s.svc.cluster.local:8983/solr" (include "dspace.solrFullname" .) .Release.Namespace -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,7 +10,6 @@ data:
   dspace__P__server__P__url: {{ printf "http://%s%s" .server.host .server.path }}
   dspace__P__ui__P__url: {{ printf "http://%s%s" .ui.host .ui.path }}
   dspace__P__name: {{ .name }}
-  solr__P__server: {{ default .solr.server $solrHost }}
   {{- if .proxiesTrustedIPRanges -}}
   proxies__P__trusted__P__ipranges: {{ .proxiesTrustedIPRanges }}
   {{- end }}
