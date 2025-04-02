@@ -6,5 +6,5 @@ metadata:
   labels:
     {{- include "nginx.labels" . | nindent 4 }}
 data:
-  default.conf: {{ .Values.overrides.conf_d.default | toYaml | indent 2 }} 
+  default.conf: {{ (tpl .Values.overrides.conf_d.default .) | toYaml | indent 2 }} 
 {{- end }}
