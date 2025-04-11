@@ -2,17 +2,18 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "geonetwork.fullname" . }}-index-pvc
+  name: {{ include "geonetwork.fullname" . }}-index
   labels:
     {{- include "geonetwork.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
   volumeMode: Filesystem
-  {{- with .Values.pvc.index.storage }}
-  {{- if .className }}
-  storageClassName: {{ .className }}
+  {{- if .volumeName }}
+  volumeName: {{ .volumeName | quote }}
   {{- end }}
+  {{- with .Values.pvc.index.storage }}
+  storageClassName: {{ .className | quote }}
   resources:
     requests:
       storage: {{ .size }}

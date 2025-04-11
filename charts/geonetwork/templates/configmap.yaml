@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "geonetwork.fullname" . }}-config
+  labels:
+    {{- include "geonetwork.labels" . | nindent 4 }}
+data:
+  {{- if .Values.pvc.data.enabled }}
+  GEONETWORK_DATA_DIR: {{ .Values.pvc.data.storage.mountPath }}
+  {{- end }}
+  {{- if .Values.pvc.index.enabled }}
+  GEONETWORK_LUCENE_DIR: {{ .Values.pvc.index.storage.mountPath }}
+  {{- end }}
+  GEONETWORK_DB_TYPE: {{ if .Values.database.enabled }}{{ .Values.database.type }}{{ else }}h2{{ end }}
