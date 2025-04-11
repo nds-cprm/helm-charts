@@ -25,16 +25,16 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext:
-  fsGroup: 15000
+podSecurityContext: {}
+  # fsGroup: 15000
 
-securityContext:
+securityContext: {}
   # capabilities:
   #   drop:
   #   - ALL
   # readOnlyRootFilesystem: true
-  runAsNonRoot: true
-  runAsUser: 15000
+  # runAsNonRoot: true
+  # runAsUser: 15000
 
 service:
   type: ClusterIP
