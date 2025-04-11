@@ -16,9 +16,7 @@ spec:
   accessModes:
     - {{ .accessMode }}
   volumeMode: Filesystem
-  {{- if .className }}
-  storageClassName: {{ .className }}
-  {{- end }}
+  storageClassName: {{ ( default "" .className ) | quote }}
   {{- if .volumeName }}
   volumeName: {{ .volumeName | quote }}
   {{- end }}
@@ -27,7 +25,9 @@ spec:
       storage: {{ .size }}
   {{- end }}
 {{- end }}
+
 ---
+
 {{- if .Values.services.backend.pvc.config.enabled -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -45,11 +45,9 @@ spec:
   accessModes:
     - {{ .accessMode }}
   volumeMode: Filesystem
-  {{- if .className }}
-  storageClassName: {{ .className }}
+  storageClassName: {{ ( default "" .className ) | quote }}
   {{- if .volumeName }}
   volumeName: {{ .volumeName | quote }}
-  {{- end }}
   {{- end }}
   resources:
     requests:
