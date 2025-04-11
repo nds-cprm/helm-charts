@@ -60,6 +60,7 @@ pvc:
   data:
     enabled: false
     keep: true
+    # volumeName: 
     storage: 
       className: ""
       size: 5Gi
@@ -69,6 +70,7 @@ pvc:
   gwc:
     enabled: false
     keep: true
+    # volumeName: 
     storage: 
       className: ""
       size: 5Gi
