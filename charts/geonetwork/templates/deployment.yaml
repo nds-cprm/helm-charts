@@ -68,7 +68,12 @@ spec:
             httpGet:
               path: /geonetwork
               port: tcp-{{ .Values.service.port }}
-            initialDelaySeconds: 40
+            initialDelaySeconds: 60
+            timeoutSeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+            
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
