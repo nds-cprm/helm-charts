@@ -2,19 +2,24 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "geoserver.fullname" . }}-gwc-pvc
+  name: {{ include "geoserver.fullname" . }}-gwc
   labels:
     {{- include "geoserver.labels" . | nindent 4 }}
+  {{- if .Values.pvc.gwc.keep }}
+  annotations:
+    helm.sh/resource-policy: keep
+  {{- end }}
 spec:
+  volumeMode: Filesystem
+  {{- if .volumeName }}
+  volumeName: {{ .volumeName | quote }}
+  {{- end }}
   {{- with .Values.pvc.gwc.storage }}
   accessModes:
     {{- range .accessModes }}
     - {{ . }}
     {{- end }}
-  volumeMode: Filesystem
-  {{- if .className }}
-  storageClassName: {{ .className }}
-  {{- end }}
+  storageClassName: {{ .className | quote }}
   resources:
     requests:
       storage: {{ .size }}

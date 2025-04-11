@@ -59,6 +59,7 @@ ingress:
 pvc:
   data:
     enabled: false
+    keep: true
     storage: 
       className: ""
       size: 5Gi
@@ -67,6 +68,7 @@ pvc:
         - ReadWriteOnce
   gwc:
     enabled: false
+    keep: true
     storage: 
       className: ""
       size: 5Gi
