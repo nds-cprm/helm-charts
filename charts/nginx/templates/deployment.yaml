@@ -1,7 +1,8 @@
+{{- $nginx := include "nginx.fullname" . -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "nginx.fullname" . }}
+  name: {{ $nginx }}
   labels:
     {{- include "nginx.labels" . | nindent 4 }}
 spec:
@@ -28,10 +29,17 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
-        {{- if .Values.overrides.conf_d.default }}
-        - name: nginx-conf-d
-          configMap:
-            name: {{ include "nginx.fullname" . }}-conf.d
+        {{ with .Values.overrides }}
+        {{- if ( and .html .html.enabled ) }}
+        - name: {{ $nginx }}-html
+          {{ .html.type | default "emptyDir" }}:
+            name: {{ .html.name }}
+        {{- end }}
+        {{- if ( and .default .default.enabled ) }}
+        - name: {{ $nginx }}-default
+          {{ .default.type | default "emptyDir" }}:
+            name: {{ .default.name }}
+        {{- end }}
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -44,10 +52,17 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           volumeMounts:
-            {{- if .Values.overrides.conf_d.default }}
-            - name: nginx-conf-d
-              mountPath: /etc/nginx/conf.d
+            {{ with .Values.overrides }}
+            {{- if ( and .html .html.enabled ) }}
+            - name: {{ $nginx }}-html
               readOnly: true
+              mountPath: /usr/share/nginx/html
+            {{- end }}
+            {{- if ( and .default .default.enabled ) }}
+            - name: {{ $nginx }}-default
+              readOnly: true
+              mountPath: /etc/nginx/conf.d
+            {{- end }}
             {{- end }}
           livenessProbe:
             httpGet:
