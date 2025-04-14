@@ -5,14 +5,20 @@ metadata:
   name: {{ include "geonetwork.fullname" . }}-index
   labels:
     {{- include "geonetwork.labels" . | nindent 4 }}
+  {{- if .Values.pvc.gwc.keep }}
+  annotations:
+    helm.sh/resource-policy: keep
+  {{- end }}
 spec:
-  accessModes:
-    - ReadWriteOnce
   volumeMode: Filesystem
   {{- if .volumeName }}
   volumeName: {{ .volumeName | quote }}
   {{- end }}
   {{- with .Values.pvc.index.storage }}
+  accessModes:
+    {{- range .accessModes }}
+    - {{ . }}
+    {{- end }}
   storageClassName: {{ .className | quote }}
   resources:
     requests:

@@ -1,6 +1,6 @@
 apiVersion: v2
 name: geonetwork
-version: 0.2.0
+version: 0.2.1
 description: |-
   GeoNetwork is a catalog application to manage spatially referenced resources. 
   It provides powerful metadata editing and search functions as well as an interactive web map viewer. 

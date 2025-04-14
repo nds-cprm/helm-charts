@@ -59,16 +59,23 @@ ingress:
 pvc:
   data:
     enabled: false
+    keep: true
     storage: 
       className: ""
       size: 200Mi
       mountPath: /srv/geonetwork/data
+      accessModes:
+        - ReadWriteOnce
   index:
     enabled: false
+    keep: true
     storage: 
       className: ""
       size: 100Mi
       mountPath: /srv/geonetwork/index
+      accessModes:
+        - ReadWriteOnce
+        - ReadOnlyMany
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
