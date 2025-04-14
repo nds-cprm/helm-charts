@@ -182,6 +182,33 @@ entries:
   geonetwork:
   - apiVersion: v2
     appVersion: 3.10.2
+    created: "2025-04-14T15:26:56.977984175Z"
+    description: GeoNetwork is a catalog application to manage spatially referenced
+      resources.  It provides powerful metadata editing and search functions as well
+      as an interactive web map viewer.  It is currently used in numerous Spatial
+      Data Infrastructure initiatives across the world
+    digest: 22be653cf3045c2a431dad925507ca216d07ff0e4d8bdead31d1f783facf6173
+    home: https://geonetwork-opensource.org/
+    icon: https://geonetwork-opensource.org/_static/chrome/geonetwork3-logo.png
+    keywords:
+    - GIS
+    - FOSS4G
+    - catalog
+    - CSW
+    - metadata
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+    name: geonetwork
+    sources:
+    - https://github.com/geonetwork/core-geonetwork
+    - https://github.com/nds-cprm/geonetwork-oci
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/geonetwork-0.2.2/geonetwork-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: 3.10.2
     created: "2025-04-14T15:18:06.175657706Z"
     description: GeoNetwork is a catalog application to manage spatially referenced
       resources.  It provides powerful metadata editing and search functions as well
@@ -1147,4 +1174,4 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/sqlserver-0.1.0/sqlserver-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-14T15:18:06.175801566Z"
+generated: "2025-04-14T15:26:56.978099089Z"
