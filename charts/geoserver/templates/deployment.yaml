@@ -31,12 +31,12 @@ spec:
         {{- if .Values.pvc.data.enabled }}
         - name: geoserver-data
           persistentVolumeClaim:
-            claimName: {{ include "geoserver.fullname" . }}-data-pvc
+            claimName: {{ include "geoserver.fullname" . }}-data
         {{- end }}
         {{- if .Values.pvc.gwc.enabled }}
         - name: geoserver-gwc
           persistentVolumeClaim:
-            claimName: {{ include "geoserver.fullname" . }}-gwc-pvc
+            claimName: {{ include "geoserver.fullname" . }}-gwc
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
