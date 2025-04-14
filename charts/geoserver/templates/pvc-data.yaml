@@ -5,7 +5,7 @@ metadata:
   name: {{ include "geoserver.fullname" . }}-data
   labels:
     {{- include "geoserver.labels" . | nindent 4 }}
-  {{- if .Values.pvc.gwc.keep }}
+  {{- if .Values.pvc.data.keep }}
   annotations:
     helm.sh/resource-policy: keep
   {{- end }}
