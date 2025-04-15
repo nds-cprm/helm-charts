@@ -61,9 +61,19 @@ spec:
               name: geoserver-gwc
             {{- end }}
           livenessProbe:
-            tcpSocket:
+            httpGet:
               port: tcp-{{ .Values.service.port }}
+              path: /geoserver/rest/about/version
+              httpHeaders:
+                - name: accept
+                  value: application/json
+                - name: content-type
+                  value: application/json
             initialDelaySeconds: 60
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
