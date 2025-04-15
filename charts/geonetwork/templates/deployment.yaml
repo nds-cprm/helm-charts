@@ -31,12 +31,12 @@ spec:
         {{- if .Values.pvc.data.enabled }}
         - name: geonetwork-data
           persistentVolumeClaim:
-            claimName: {{ include "geonetwork.fullname" . }}-data-pvc
+            claimName: {{ include "geonetwork.fullname" . }}-data
         {{- end }}
         {{- if .Values.pvc.index.enabled }}
         - name: geonetwork-index
           persistentVolumeClaim:
-            claimName: {{ include "geonetwork.fullname" . }}-index-pvc
+            claimName: {{ include "geonetwork.fullname" . }}-index
         {{- end }}
       containers:
         - name: {{ .Chart.Name }}
