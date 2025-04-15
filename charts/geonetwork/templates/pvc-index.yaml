@@ -1,11 +1,15 @@
-{{- if .Values.pvc.index.enabled -}}
+{{- $pvcName := printf "%s-index" (include "geonetwork.fullname" .) -}}
+{{- $pvcLabels := include "geonetwork.labels" . -}}
+
+{{- with .Values.pvc.index }}
+{{- if .enabled -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "geonetwork.fullname" . }}-index
+  name: {{ $pvcName }}
   labels:
-    {{- include "geonetwork.labels" . | nindent 4 }}
-  {{- if .Values.pvc.index.keep }}
+    {{- $pvcLabels | nindent 4 }}
+  {{- if .keep }}
   annotations:
     helm.sh/resource-policy: keep
   {{- end }}
@@ -14,14 +18,13 @@ spec:
   {{- if .volumeName }}
   volumeName: {{ .volumeName | quote }}
   {{- end }}
-  {{- with .Values.pvc.index.storage }}
   accessModes:
-    {{- range .accessModes }}
+    {{- range .storage.accessModes }}
     - {{ . }}
     {{- end }}
-  storageClassName: {{ .className | quote }}
+  storageClassName: {{ .storage.className | quote }}
   resources:
     requests:
-      storage: {{ .size }}
+      storage: {{ .storage.size }}
   {{- end }}
 {{- end }}
