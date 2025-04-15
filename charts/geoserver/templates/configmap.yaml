@@ -31,7 +31,7 @@ data:
   # CSRF
   GEOSERVER_CSRF_DISABLED: {{ .Values.config.csrf.disabled | toString | lower | quote  }}  
   {{- if not (empty .Values.config.csrf.whitelist) }}
-  GEOSERVER_CSRF_WHITELIST: {{ join "," .Values.config.csrf.whitelist }}
+  GEOSERVER_CSRF_WHITELIST: {{ ( join "," .Values.config.csrf.whitelist ) | quote }}
   {{- end }}
   # Marlin Renderer
   GEOSERVER_DISABLE_MARLIN: {{ .Values.config.marlinRenderer.disabled | toString | lower | quote  }} 
@@ -40,4 +40,4 @@ data:
   GEOSERVER_APPSCHEMA_PROPERTIES_FILE: {{ .Values.config.appSchema.propertiesFile }}
   {{- end }}
   # CORS
-  GEOSERVER_CORS_ALLOWED_ORIGINS: {{ join "," .Values.config.cors.allowedOrigins  }}
+  GEOSERVER_CORS_ALLOWED_ORIGINS: {{ ( join "," .Values.config.cors.allowedOrigins ) | quote  }}
