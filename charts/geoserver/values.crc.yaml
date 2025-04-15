@@ -1,0 +1,41 @@
+image:
+  tag: 2.24.4-java17
+#   pullPolicy: Always
+
+ingress:
+  enabled: true
+  hosts:
+    - host: geoserver.sgb-geoservicos-homolog.apps-crc.testing
+      paths:
+        - path: /geoserver
+          pathType: ImplementationSpecific
+
+config:
+  console:
+    disabled: false
+  cors:
+    allowedOrigins:
+      - '*'
+  csrf:
+    disabled: false
+    whitelist:
+      - '*'
+  jvm:
+    CATALINA_OPTS: >-
+      -XX:PerfDataSamplingInterval=500 
+      -XX:SoftRefLRUPolicyMSPerMB=36000 
+      -XX:NewRatio=2 
+      -XX:+UseG1GC 
+      -XX:+UseStringDeduplication 
+      -XX:InitiatingHeapOccupancyPercent=70 
+    GEOSERVER_OPTS: >-
+      -Dorg.geotools.referencing.forceXY=true 
+      -Dorg.geotools.shapefile.datetime=true 
+      -Dgeoserver.login.autocomplete=off
+      -Doracle.jdbc.timezoneAsRegion=false
+    JAVA_OPTS: >-
+      -server 
+      -Djava.awt.headless=true 
+      -Xms4G 
+      -Xmx6G
+  
