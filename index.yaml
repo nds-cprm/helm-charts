@@ -1282,6 +1282,30 @@ entries:
   nginx:
   - apiVersion: v2
     appVersion: 1.25.5
+    created: "2025-04-29T17:37:41.007453465Z"
+    description: nginx [engine x] is an HTTP and reverse proxy server, a mail proxy
+      server, and a generic TCP/UDP proxy server, originally written by Igor Sysoev.
+    digest: 193684bf42822cc21723ffa103aaf7629d14abef09a94cf397e122f335efc586
+    home: https://nginx.org/
+    icon: https://nginx.org/nginx.png
+    keywords:
+    - web server
+    - http
+    - proxy
+    - load balancing
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+    name: nginx
+    sources:
+    - https://github.com/nginx/nginx
+    - https://github.com/nginxinc/docker-nginx-unprivileged
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/nginx-0.3.1/nginx-0.3.1.tgz
+    version: 0.3.1
+  - apiVersion: v2
+    appVersion: 1.25.5
     created: "2025-04-14T14:29:45.817134474Z"
     description: nginx [engine x] is an HTTP and reverse proxy server, a mail proxy
       server, and a generic TCP/UDP proxy server, originally written by Igor Sysoev.
@@ -1363,4 +1387,4 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/sqlserver-0.1.0/sqlserver-0.1.0.tgz
     version: 0.1.0
-generated: "2025-04-15T17:15:18.927740058Z"
+generated: "2025-04-29T17:37:41.00756873Z"
