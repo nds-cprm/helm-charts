@@ -13,10 +13,11 @@ spec:
       {{- include "geoserver.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "geoserver.selectorLabels" . | nindent 8 }}
     spec:
@@ -61,14 +62,11 @@ spec:
               name: geoserver-gwc
             {{- end }}
           livenessProbe:
-            httpGet:
-              port: tcp-{{ .Values.service.port }}
-              path: /geoserver/rest/about/version
-              httpHeaders:
-                - name: accept
-                  value: application/json
-                - name: content-type
-                  value: application/json
+            exec:
+              command: 
+                - curl 
+                - "-fs" 
+                - http://localhost:{{ .Values.service.port }}/geoserver            
             initialDelaySeconds: 60
             timeoutSeconds: 1
             periodSeconds: 30
