@@ -42,7 +42,12 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: {{ include "dspace.frontendFullname" . }}-configs
+                name: {{ include "dspace.frontendFullname" . }}-ui-env
+          {{- if .Values.config.ui.configFile }}
+          volumeMounts:
+            - name: ui-config
+              mountPath: /app/config
+          {{- end }}
           livenessProbe:
             httpGet:
               path: /home
@@ -64,6 +69,12 @@ spec:
               until wget --spider {{ printf "http://%s:8080%s" (include "dspace.backendFullname" .) .Values.config.server.path }}
                 do echo waiting for REST API; sleep 10; 
               done
+      {{- if .Values.config.ui.configFile }}
+      volumes:
+        - name: ui-config
+          configMap:
+            name: {{ include "dspace.frontendFullname" . }}-ui-config
+      {{- end }}
       {{- with .Values.services.frontend.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
