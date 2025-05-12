@@ -38,9 +38,9 @@ spec:
           env:
             - name: PGDATA
               value: /data
-            - name: POSTGRES_DB
-              value: dspace
             {{- with .Values.config.db }}
+            - name: POSTGRES_DB
+              value: {{ .dbName }}
             - name: POSTGRES_USER
               value: {{ .username }}
             - name: POSTGRES_PASSWORD
