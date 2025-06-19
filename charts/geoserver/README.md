@@ -71,6 +71,9 @@ A tabela abaixo lista os parâmetros configuráveis do chart GeoServer e seus va
 | `autoscaling.minReplicas`     | Número mínimo de réplicas para o autoscaling.                              | `1`                    |
 | `autoscaling.maxReplicas`     | Número máximo de réplicas para o autoscaling.                              | `3`                    |
 | `autoscaling.targetCPUUtilizationPercentage` | Percentual alvo de utilização da CPU para o autoscaling.                  | `80`                   |
+| `extraHosts` | Lista de entradas extras para o /etc/hosts do pod.                  | `[]`                   |
+| `extraHosts[].ip` | IP para o qual os hostnames vão resolver.                  | `127.0.0.1`                   |
+| `extraHosts[].hostnames` | Lista de hostnames referentes ao ip acima.                  | `['localhost', 'localhost.localdomain']`                   |
 | `nodeSelector`                | Seletor de nós para restringir em quais nós os pods podem ser agendados.   | `{}`                   |
 | `tolerations`                 | Tolerâncias para permitir que os pods sejam agendados em nós com taints específicos. | `[]`                   |
 | `affinity`                    | Regras de afinidade e anti-afinidade para controlar o agendamento de pods. | `{}`                   |
