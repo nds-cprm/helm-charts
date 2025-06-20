@@ -83,6 +83,11 @@ services:
     nodeSelector: {}
     tolerations: []
     affinity: {}
+    extraHosts: []
+      # - ip: 127.0.0.1
+      #   hostnames:
+      #     - localhost.localdomain
+      #     - localhost
     pvc:
       assetstore:
         enabled: true
