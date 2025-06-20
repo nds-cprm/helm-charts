@@ -1,6 +1,6 @@
 apiVersion: v2
 name: dspace
-version: 0.4.2
+version: 0.5.0
 description: |-
   DSpace is an open source repository application that allows you to capture, store, 
   index, preserve and distribute your digital material including text, video, audio 
@@ -22,4 +22,4 @@ maintainers:
   - name: Marcelo Zoel
     email: marcelo.zoel@sgb.gov.br
 icon: "http://dspace.lyrasis.org/wp-content/uploads/2021/10/DSpace-logo-light.png"
-appVersion: "dspace-7.6.2"
+appVersion: "dspace-8.1"

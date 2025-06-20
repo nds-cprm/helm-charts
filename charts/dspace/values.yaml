@@ -12,7 +12,7 @@ serviceAccount:
 
 ingress:
   className: ""
-  host: &host "rigeo-dspace.apps-crc.testing"
+  host: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
@@ -25,13 +25,15 @@ config:
   # https://wiki.lyrasis.org/display/DSDOC7x/Installing+DSpace#InstallingDSpace-InstallingtheBackend(ServerAPI)
   # https://wiki.lyrasis.org/display/DSDOC7x/Installing+DSpace#InstallingDSpace-InstallingtheFrontend(UserInterface)
   server:
-    host: *host
+    host: ""
+    port: 80
     path: /server
     tlsSecretName: ""
   ui:
-    host: *host
+    host: ""
     path: /
     tlsSecretName: ""
+    configFile: ""
   db:
     external: false
     host: ""
@@ -84,11 +86,13 @@ services:
     pvc:
       assetstore:
         enabled: true
+        keep: true
         className: ""
         size: 1Gi
         accessMode: ReadWriteOnce
       config:
         enabled: true
+        keep: true
         className: ""
         size: 1Gi
         accessMode: ReadWriteOnce    

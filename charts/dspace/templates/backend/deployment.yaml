@@ -56,6 +56,12 @@ spec:
                 name: {{ include "dspace.backendFullname" . }}-configs
             - secretRef:
                 name: {{ include "dspace.backendFullname" . }}-credentials
+          command:
+            - /bin/bash
+          args:
+            {{- $dir :=.Values.config.dir }}
+            - '-c'
+            - {{ printf "java -jar %s/webapps/server-boot.jar --dspace.dir=%s" $dir $dir }}
           volumeMounts:
             {{- if .Values.services.backend.pvc.assetstore.enabled }}
             - mountPath: {{ printf "%s/assetstore" .Values.config.dir }}
@@ -74,13 +80,6 @@ spec:
             periodSeconds: 60
             timeoutSeconds: 10
             failureThreshold: 2
-          # TODO: Move commands before exec tomcat to initContainers
-          command: ["/bin/bash"]
-          args:
-            - '-c'
-            - |
-              /dspace/bin/dspace database migrate ignored
-              catalina.sh run
           resources:
             {{- toYaml .Values.services.backend.resources | nindent 12 }}
       initContainers:
@@ -88,7 +87,10 @@ spec:
         {{- if .Values.services.backend.pvc.config.enabled }}
         - name: copy-dspace-config
           image: "{{ .Values.services.backend.image.repository }}:{{ .Values.services.backend.image.tag | default .Chart.AppVersion }}"
-          command: ['/bin/sh']
+          securityContext:
+            {{- toYaml .Values.services.backend.securityContext | nindent 12 }}
+          command: 
+            - '/bin/sh'
           args: 
             - '-c' 
             - |
@@ -97,14 +99,38 @@ spec:
             - mountPath: /mnt/config
               name: dspace-config
           {{- end }}
-
-        # TODO: Add init container to check if database is ready
+        # Check if database is ready
         - name: check-if-db-is-ready
           image: "{{ .Values.services.backend.image.repository }}:{{ .Values.services.backend.image.tag | default .Chart.AppVersion }}"
+          securityContext:
+            {{- toYaml .Values.services.backend.securityContext | nindent 12 }}
           command: ['/bin/sh']
           args: 
             - '-c'
             - /dspace/bin/dspace database test          
+          envFrom:
+            - configMapRef:
+                name: {{ include "dspace.backendFullname" . }}-configs
+            - secretRef:
+                name: {{ include "dspace.backendFullname" . }}-credentials
+          volumeMounts:
+            {{- if .Values.services.backend.pvc.assetstore.enabled }}
+            - mountPath: {{ printf "%s/assetstore" .Values.config.dir }}
+              name: dspace-assetstore
+            {{- end }}
+            {{- if .Values.services.backend.pvc.config.enabled }}
+            - mountPath: {{ printf "%s/config" .Values.config.dir }}
+              name: dspace-config
+            {{- end }}
+        # After, make migrations
+        - name: make-migrations
+          image: "{{ .Values.services.backend.image.repository }}:{{ .Values.services.backend.image.tag | default .Chart.AppVersion }}"
+          securityContext:
+            {{- toYaml .Values.services.backend.securityContext | nindent 12 }}
+          command: ['/bin/sh']
+          args: 
+            - '-c'
+            - /dspace/bin/dspace database migrate ignored         
           envFrom:
             - configMapRef:
                 name: {{ include "dspace.backendFullname" . }}-configs
