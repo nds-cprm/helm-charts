@@ -1,3 +1,4 @@
+{{- $httpScheme := ternary "http" "https" (empty .Values.ingress.tlsSecretName) -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -39,7 +40,7 @@ data:
   CELERY_BEAT_SCHEDULER: celery.beat:PersistentScheduler
   ASYNC_SIGNALS: "True"
 
-  SITEURL: http://{{ include "geonode.hostname" . }}/
+  SITEURL: {{ $httpScheme }}://{{ include "geonode.hostname" . }}/
 
   ALLOWED_HOSTS: '[''{{ include "django.hostname" . }}'', ''{{ include "geonode.hostname" . }}'', ''127.0.0.1'', ''localhost'']'
 
@@ -67,7 +68,11 @@ data:
   # #################
   GEONODE_LB_HOST_IP: {{ include "django.hostname" . }}
   GEONODE_LB_PORT: {{ .Values.services.django.servicePort | toString | quote }}
-  NGINX_BASE_URL: http://{{ include "geonode.hostname" . }}
+  NGINX_BASE_URL: {{ $httpScheme }}://{{ include "geonode.hostname" . }}
+
+  {{ if eq $httpScheme "https" }}
+  EXTERNAL_PROXY_SCHEME: {{ $httpScheme }}
+  {{ end }}
 
   HTTP_HOST: {{ include "geonode.hostname" . }}
   HTTPS_HOST: ""
@@ -89,8 +94,8 @@ data:
   # #################
   GEOSERVER_LB_HOST_IP: {{ include "geoserver.hostname" . }}
   GEOSERVER_LB_PORT: {{ .Values.services.geoserver.servicePort | toString | quote }}
-  GEOSERVER_WEB_UI_LOCATION: http://{{ include "geonode.hostname" . }}/geoserver/
-  GEOSERVER_PUBLIC_LOCATION: http://{{ include "geonode.hostname" . }}/geoserver/
+  GEOSERVER_WEB_UI_LOCATION: {{ $httpScheme }}://{{ include "geonode.hostname" . }}/geoserver/
+  GEOSERVER_PUBLIC_LOCATION: {{ $httpScheme }}://{{ include "geonode.hostname" . }}/geoserver/
   GEOSERVER_LOCATION: {{ include "geoserver.internalPath" . }}
 
   {{ with .Values.configs.geoserver }}
