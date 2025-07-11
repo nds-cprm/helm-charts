@@ -426,6 +426,50 @@ entries:
     version: 0.1.0
   geonode:
   - apiVersion: v2
+    appVersion: 4.4.3
+    created: "2025-07-11T19:02:34.09885288Z"
+    dependencies:
+    - condition: rabbitmq.enabled
+      name: rabbitmq
+      repository: https://charts.bitnami.com/bitnami
+      version: 15.3.2
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 16.4.14
+    - condition: memcached.enabled
+      name: memcached
+      repository: https://charts.bitnami.com/bitnami
+      version: 7.6.5
+    description: 'GeoNode is a web-based application and platform for developing geospatial
+      information  systems (GIS) and for deploying spatial data infrastructures (SDI). '
+    digest: 9959336d4e448fb8feec544feee7a8d91705f6307bb7de130af486d70951a70e
+    home: https://geonode.org/
+    icon: https://avatars.githubusercontent.com/u/132843?s=200&v=4
+    keywords:
+    - GIS
+    - FOSS4G
+    - webmap
+    - WMS
+    - WFS
+    - WCS
+    - SDI
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+      url: https://www.sgb.gov.br
+    name: geonode
+    sources:
+    - https://github.com/GeoNode/geonode/
+    - https://github.com/GeoNode/geonode-docker
+    - https://github.com/GeoNode/geonode-mapstore-client
+    - https://github.com/GeoNode/geonode-importer
+    - https://github.com/GeoNode/geonode-project
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/geonode-0.5.1/geonode-0.5.1.tgz
+    version: 0.5.1
+  - apiVersion: v2
     appVersion: 4.4.1
     created: "2025-02-25T02:35:06.89217899Z"
     dependencies:
@@ -1496,4 +1540,4 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/sqlserver-0.1.0/sqlserver-0.1.0.tgz
     version: 0.1.0
-generated: "2025-06-20T02:13:23.604609828Z"
+generated: "2025-07-11T19:02:34.099033237Z"
