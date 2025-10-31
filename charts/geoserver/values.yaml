@@ -112,6 +112,7 @@ tolerations: []
 affinity: {}
 
 config:
+  contextPath: ""
   jvm:
     JAVA_OPTS: ""
     CATALINA_OPTS: ""
