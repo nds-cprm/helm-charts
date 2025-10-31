@@ -16,7 +16,6 @@ data:
   GEOSERVER_OPTS: {{ .GEOSERVER_OPTS | quote }}
   {{- end }}
   {{- end }}
-
   # TODO: Adicionar suporte a TLS, para selecionar http ou https, via ingress
   PROXY_BASE_URL: {{ .Values.config.proxyBaseURL | default (cat "http://" $firstHost.host $firstPath | replace " " "") }}        
   {{- if .Values.pvc.data.enabled }}
@@ -44,3 +43,13 @@ data:
   {{- if .Values.config.contextPath }}
   GEOSERVER_CONTEXT_PATH: {{ .Values.config.contextPath }}
   {{- end }}
+  # cluster
+  CLUSTER_CONFIG_READONLY: {{ (ternary "enabled" "disabled" .Values.config.cluster.readonly) | quote }}
+  CLUSTER_CONFIG_DURABLE: {{ .Values.config.cluster.durable | quote }}
+  CLUSTER_CONFIG_BROKER_URL: {{ .Values.config.cluster.brokerURL }}
+  CLUSTER_CONFIG_EMBEDDED_BROKER: {{ (ternary "enabled" "disabled" .Values.config.cluster.embeddedBroker) | quote }}
+  CLUSTER_CONFIG_CONNECTION_RETRY: "{{ .Values.config.cluster.connection.retry }}"
+  CLUSTER_CONFIG_TOGGLE_MASTER: {{ .Values.config.cluster.toggleMaster | quote }}
+  CLUSTER_CONFIG_CONNECTION: {{ .Values.config.cluster.connection.enabled | quote }}
+  CLUSTER_CONFIG_TOGGLE_SLAVE: {{ .Values.config.cluster.toggleSlave | quote }}
+  CLUSTER_CONFIG_CONNECTION_MAXWAIT: "{{ .Values.config.cluster.connection.maxWait }}"

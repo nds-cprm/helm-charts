@@ -129,3 +129,14 @@ config:
     disabled: false
   appSchema:
     propertiesFile: "" 
+  cluster:
+    readonly: false # enabled/disabled
+    durable: false
+    brokerURL: ""
+    embeddedBroker: false # enabled/disabled
+    toggleMaster: false
+    toggleSlave: false
+    connection:
+      enabled: false
+      retry: 10
+      maxWait: 500 
