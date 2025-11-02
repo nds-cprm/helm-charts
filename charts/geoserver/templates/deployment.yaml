@@ -39,6 +39,9 @@ spec:
           persistentVolumeClaim:
             claimName: {{ include "geoserver.fullname" . }}-gwc
         {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
       {{- with .Values.extraHosts }}
       hostAliases:
         {{- toYaml . | nindent 8 }}
@@ -64,6 +67,9 @@ spec:
             {{- if .Values.pvc.gwc.enabled }}
             - mountPath: {{ .Values.pvc.gwc.storage.mountPath }}
               name: geoserver-gwc
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           livenessProbe:
             exec:
