@@ -99,6 +99,10 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+# Add support for initContainers
+initContainers: []
+
+# extra hosts for container's /etc/hosts
 extraHosts: []
   # - ip: 127.0.0.1
   #   hostnames:

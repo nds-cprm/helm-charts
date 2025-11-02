@@ -58,7 +58,11 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: {{ include "geoserver.fullname" . }} 
+                name: {{ include "geoserver.fullname" . }}          
+          {{- with .Values.initContainers }}
+          initContainers:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           volumeMounts:
             {{- if .Values.pvc.data.enabled }}
             - mountPath: {{ .Values.pvc.data.storage.mountPath }}
