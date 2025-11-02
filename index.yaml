@@ -1044,6 +1044,33 @@ entries:
   geoserver:
   - apiVersion: v2
     appVersion: 2.26.2
+    created: "2025-11-02T12:21:27.771066249Z"
+    description: GeoServer is an open source server for sharing geospatial data.  Designed
+      for interoperability, it publishes data from any major spatial data source using
+      open standards
+    digest: d7315cfe6cc4182acb349d45753370203de0df79415011fe9eaa2636ffcac72a
+    home: https://geoserver.org/
+    icon: https://geoserver.org/img/geoserver-logo.png
+    keywords:
+    - GIS
+    - FOSS4G
+    - webmap
+    - WMS
+    - WFS
+    - WCS
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+    name: geoserver
+    sources:
+    - https://github.com/geoserver/geoserver
+    - https://github.com/nds-cprm/geoserver-oci
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/geoserver-0.7.0/geoserver-0.7.0.tgz
+    version: 0.7.0
+  - apiVersion: v2
+    appVersion: 2.26.2
     created: "2025-10-31T15:43:36.880203141Z"
     description: GeoServer is an open source server for sharing geospatial data.  Designed
       for interoperability, it publishes data from any major spatial data source using
@@ -1613,4 +1640,4 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/sqlserver-0.1.0/sqlserver-0.1.0.tgz
     version: 0.1.0
-generated: "2025-10-31T15:43:36.880359994Z"
+generated: "2025-11-02T12:21:27.771262413Z"
