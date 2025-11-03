@@ -128,6 +128,8 @@ tolerations: []
 
 affinity: {}
 
+stateful: false
+
 config:
   contextPath: ""
   jvm:

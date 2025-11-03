@@ -1,11 +1,12 @@
-{{- if not .Values.stateful -}}
+{{- if .Values.stateful -}}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "geoserver.fullname" . }}
   labels:
     {{- include "geoserver.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ include "geoserver.fullname" . }}
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
@@ -30,11 +31,6 @@ spec:
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       volumes:
-        {{- if .Values.pvc.data.enabled }}
-        - name: geoserver-data
-          persistentVolumeClaim:
-            claimName: {{ include "geoserver.fullname" . }}-data
-        {{- end }}
         {{- if .Values.pvc.gwc.enabled }}
         - name: geoserver-gwc
           persistentVolumeClaim:
@@ -65,10 +61,8 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            {{- if .Values.pvc.data.enabled }}
             - mountPath: {{ .Values.pvc.data.storage.mountPath }}
               name: geoserver-data
-            {{- end }}
             {{- if .Values.pvc.gwc.enabled }}
             - mountPath: {{ .Values.pvc.gwc.storage.mountPath }}
               name: geoserver-gwc
@@ -101,4 +95,24 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: geoserver-data
+        labels:
+          {{- include "geoserver.labels" . | nindent 10 }}
+      spec:
+        volumeMode: Filesystem
+        {{- if .Values.pvc.data.volumeName }}
+        volumeName: {{ .Values.pvc.data.volumeName | quote }}
+        {{- end }}
+        accessModes:
+          {{- range .Values.pvc.data.storage.accessModes }}
+          - {{ . }}
+          {{- end }}
+        {{- if and (not .Values.pvc.data.volumeName) .Values.pvc.data.storage.className  }}
+        storageClassName: {{ .Values.pvc.data.storage.className | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.pvc.data.storage.size }}
 {{- end -}}
