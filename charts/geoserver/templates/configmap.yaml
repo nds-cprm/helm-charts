@@ -18,13 +18,13 @@ data:
   {{- end }}
   # TODO: Adicionar suporte a TLS, para selecionar http ou https, via ingress
   PROXY_BASE_URL: {{ .Values.config.proxyBaseURL | default (cat "http://" $firstHost.host $firstPath | replace " " "") }}        
-  {{- if .Values.pvc.data.enabled }}
+  {{- if .Values.config.data.enabled }}
   # Geoserver extra volume
-  GEOSERVER_DATA_DIR: {{ .Values.pvc.data.storage.mountPath }}
+  GEOSERVER_DATA_DIR: {{ .Values.config.data.mountPath }}
   {{- end }}
-  {{- if .Values.pvc.gwc.enabled }}
+  {{- if .Values.config.gwc.cacheDir }}
   # Geowebcache extra volume
-  GEOWEBCACHE_CACHE_DIR: {{ .Values.pvc.gwc.storage.mountPath }}
+  GEOWEBCACHE_CACHE_DIR: {{ .Values.config.gwc.cacheDir }}
   {{- end }}
   GEOSERVER_CONSOLE_DISABLED: {{ .Values.config.console.disabled | toString | lower | quote  }}
   # CSRF

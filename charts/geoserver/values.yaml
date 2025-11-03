@@ -56,30 +56,6 @@ ingress:
     #   hosts:
     #     - chart-example.local
 
-pvc:
-  data:
-    enabled: false
-    keep: true
-    # volumeName: 
-    storage: 
-      className: ""
-      size: 5Gi
-      mountPath: /srv/geoserver/data
-      accessModes:
-        - ReadWriteOnce
-  gwc:
-    enabled: false
-    keep: true
-    # volumeName: 
-    storage: 
-      className: ""
-      size: 5Gi
-      mountPath: /srv/geoserver/gwc
-      accessModes:
-        - ReadWriteOnce
-        - ReadOnlyMany
-
-
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
@@ -132,6 +108,18 @@ stateful: false
 
 config:
   contextPath: ""
+  data:
+    enabled: false
+    keep: true
+    # volumeName: 
+    mountPath: /srv/geoserver/data
+    storage: 
+      # className: ""
+      size: 5Gi
+      accessModes:
+        - ReadWriteOnce
+  gwc:
+    cacheDir: ""
   jvm:
     JAVA_OPTS: ""
     CATALINA_OPTS: ""

@@ -29,16 +29,12 @@ spec:
       serviceAccountName: {{ include "geoserver.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.extraVolumes }}
       volumes:
-        {{- if .Values.pvc.data.enabled }}
+        {{- if .Values.config.data.enabled }}
         - name: geoserver-data
           persistentVolumeClaim:
-            claimName: {{ include "geoserver.fullname" . }}-data
-        {{- end }}
-        {{- if .Values.pvc.gwc.enabled }}
-        - name: geoserver-gwc
-          persistentVolumeClaim:
-            claimName: {{ include "geoserver.fullname" . }}-gwc
+            claimName:  {{ include "geoserver.pvcName" . }}
         {{- end }}
         {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
@@ -64,18 +60,10 @@ spec:
           initContainers:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          volumeMounts:
-            {{- if .Values.pvc.data.enabled }}
-            - mountPath: {{ .Values.pvc.data.storage.mountPath }}
-              name: geoserver-data
-            {{- end }}
-            {{- if .Values.pvc.gwc.enabled }}
-            - mountPath: {{ .Values.pvc.gwc.storage.mountPath }}
-              name: geoserver-gwc
-            {{- end }}
-            {{- with .Values.extraVolumeMounts }}
+          {{- with .Values.extraVolumeMounts }}
+          volumeMounts:            
             {{- toYaml . | nindent 12 }}
-            {{- end }}
+          {{- end }}
           livenessProbe:
             exec:
               command: 

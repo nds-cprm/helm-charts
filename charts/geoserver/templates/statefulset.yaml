@@ -61,12 +61,8 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           volumeMounts:
-            - mountPath: {{ .Values.pvc.data.storage.mountPath }}
+            - mountPath: {{ .Values.config.data.mountPath }}
               name: geoserver-data
-            {{- if .Values.pvc.gwc.enabled }}
-            - mountPath: {{ .Values.pvc.gwc.storage.mountPath }}
-              name: geoserver-gwc
-            {{- end }}
             {{- with .Values.extraVolumeMounts }}
             {{- toYaml . | nindent 12 }}
             {{- end }}
@@ -97,7 +93,7 @@ spec:
       {{- end }}
   volumeClaimTemplates:
     - metadata:
-        name: geoserver-data
+        name: {{ include "geoserver.pvcName" . }}
         labels:
           {{- include "geoserver.labels" . | nindent 10 }}
       spec:
@@ -109,7 +105,7 @@ spec:
           {{- range .Values.pvc.data.storage.accessModes }}
           - {{ . }}
           {{- end }}
-        {{- if and (not .Values.pvc.data.volumeName) .Values.pvc.data.storage.className  }}
+        {{- if and (not .Values.pvc.data.volumeName) .Values.pvc.data.storage.className }}
         storageClassName: {{ .Values.pvc.data.storage.className | quote }}
         {{- end }}
         resources:

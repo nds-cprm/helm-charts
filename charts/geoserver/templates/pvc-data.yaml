@@ -1,30 +1,26 @@
-{{- $pvcName := printf "%s-data" (include "geoserver.fullname" .) -}}
-{{- $pvcLabels := include "geoserver.labels" . -}}
-
-{{- with .Values.pvc.data }}
-{{- if .enabled -}}
+{{- if and .Values.config.data.enabled (not .Values.stateful) -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ $pvcName }}
+  name: {{ printf "%s-data" ( include "geoserver.fullname" . ) }}
   labels:
-    {{- $pvcLabels | nindent 4 }}
-  {{- if .keep }}
+    {{- include "geoserver.labels" . | nindent 4 }}
+  {{- if .Values.config.data.keep }}
   annotations:
     helm.sh/resource-policy: keep
   {{- end }}
 spec:
   volumeMode: Filesystem
-  {{- if .volumeName }}
-  volumeName: {{ .volumeName | quote }}
+  {{- if .Values.config.data.volumeName }}
+  volumeName: {{ .Values.config.data.volumeName | quote }}
   {{- end }}
   accessModes:
-    {{- range .storage.accessModes }}
+    {{- range .Values.config.data.storage.accessModes }}
     - {{ . }}
     {{- end }}
-  storageClassName: {{ .storage.className | quote }}
+    {{-  if and (not .Values.config.data.volumeName ) .Values.config.data.storage.className }}
+  storageClassName: {{ .Values.config.data.storage.className | quote }}
   resources:
     requests:
-      storage: {{ .storage.size }}
-{{- end }}
+      storage: {{ .Values.config.data.storage.size }}
 {{- end }}
