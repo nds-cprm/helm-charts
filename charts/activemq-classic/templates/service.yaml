@@ -17,3 +17,25 @@ spec:
       name: jms
   selector:
     {{- include "activemq.selectorLabels" . | nindent 4 }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "activemq.fullname" . }}-hl
+  labels:
+    {{- include "activemq.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+    - port: 61616
+      targetPort: jms
+      protocol: TCP
+      name: jms
+  selector:
+    {{- include "activemq.selectorLabels" . | nindent 4 }}
