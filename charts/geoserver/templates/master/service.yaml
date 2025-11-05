@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "geoserver.master.fullname" . }}
+  labels:
+    {{- include "geoserver.master.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.master.service.type }}
+  ports:
+    - port: {{ .Values.master.service.port }}
+      targetPort: 8080
+      protocol: TCP
+      name: tcp-{{ .Values.master.service.port }}
+  selector:
+    {{- include "geoserver.master.selectorLabels" . | nindent 4 }}

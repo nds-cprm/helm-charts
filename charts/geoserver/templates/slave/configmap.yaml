@@ -1,0 +1,61 @@
+{{- $slaveEnabled := .Values.cluster.enabled -}}
+{{- if $slaveEnabled -}}
+{{- $host := .Values.ingress.host.name -}}
+{{- $path := .Values.ingress.host.paths.slave.path -}}
+{{- $proxyBaseURL := printf "http%s://%s%s" (ternary "" "s" (empty .Values.ingress.host.tlsSecretName)) $host $path -}}
+{{- $brokerURL := printf "tcp://%s:61616" (include "activemq.fullname" .Subcharts.activemq) -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "geoserver.slave.fullname" . }}
+data:
+{{- with .Values.slave }}            
+  {{- if .config.jvm.JAVA_OPTS }}
+  JAVA_OPTS: {{ .config.jvm.JAVA_OPTS | quote }}
+  {{- end }}
+  {{- if .config.jvm.CATALINA_OPTS }}
+  CATALINA_OPTS: {{ .config.jvm.CATALINA_OPTS | quote }} 
+  {{- end }}
+  {{- if .config.jvm.GEOSERVER_OPTS }} 
+  GEOSERVER_OPTS: {{ .config.jvm.GEOSERVER_OPTS | quote }}
+  {{- end }}
+  {{- if $.Values.ingress.enabled }}
+  PROXY_BASE_URL: {{ .config.proxyBaseURL | default $proxyBaseURL }}
+  {{- end }}
+  GEOSERVER_CONTEXT_PATH: {{ ternary $path .config.contextPath $.Values.ingress.enabled }}
+  {{- if .pvc.enabled -}}
+  GEOSERVER_DATA_DIR: {{ .pvc.mountPath | quote }} 
+  {{- end }}
+  {{- if .config.gwc.cacheDir -}}
+  GEOWEBCACHE_CACHE_DIR: {{ .config.gwc.cacheDir }}
+  {{- end }}
+  # disable console
+  GEOSERVER_CONSOLE_DISABLED: {{ .config.console.disabled | toString | lower | quote  }}
+  # CSRF
+  GEOSERVER_CSRF_DISABLED: {{ .config.csrf.disabled | toString | lower | quote  }}  
+  {{- if not (empty .config.csrf.whitelist) }}
+  GEOSERVER_CSRF_WHITELIST: {{ ( join "," .config.csrf.whitelist ) | quote }}
+  {{- end }}
+  # Marlin Renderer
+  GEOSERVER_DISABLE_MARLIN: {{ .config.marlinRenderer.disabled | toString | lower | quote  }} 
+  {{- if .config.appSchema.propertiesFile -}} 
+  GEOSERVER_APPSCHEMA_PROPERTIES_FILE: {{ .config.appSchema.propertiesFile }}
+  {{- end }}
+  # CORS
+  GEOSERVER_CORS_ALLOWED_ORIGINS: {{ ( join "," .config.cors.allowedOrigins ) | quote }}
+  # cluster
+  CLUSTER_CONFIG_TOGGLE_MASTER: {{ not $slaveEnabled | quote }}
+  CLUSTER_CONFIG_TOGGLE_SLAVE: {{ $slaveEnabled | quote }}
+  CLUSTER_CONFIG_READONLY: {{ (ternary "enabled" "disabled" .config.cluster.readonly) | quote }}
+  # cluster broker
+  CLUSTER_CONFIG_EMBEDDED_BROKER: {{ (ternary "enabled" "disabled" .config.cluster.embeddedBroker) | quote }}
+  {{- if not .config.cluster.embeddedBroker }}
+  CLUSTER_CONFIG_BROKER_URL: {{ .config.cluster.brokerURL | default $brokerURL }} 
+  {{- end }}
+  CLUSTER_CONFIG_DURABLE: {{ .config.cluster.durable | quote }}
+  # cluster connection
+  CLUSTER_CONFIG_CONNECTION: {{ .config.cluster.connection.enabled | quote }}
+  CLUSTER_CONFIG_CONNECTION_RETRY: "{{ .config.cluster.connection.retry }}"
+  CLUSTER_CONFIG_CONNECTION_MAXWAIT: "{{ .config.cluster.connection.maxWait }}"
+{{- end -}}
+{{- end -}}

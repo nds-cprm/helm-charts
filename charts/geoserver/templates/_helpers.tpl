@@ -23,6 +23,14 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
+{{- define "geoserver.master.fullname" -}}
+{{ printf "%s-master" ( include "geoserver.fullname" . | trunc 56 )}}
+{{- end }}
+
+{{- define "geoserver.slave.fullname" -}}
+{{ printf "%s-slave" ( include "geoserver.fullname" . | trunc 57 )}}
+{{- end }}
+
 {{/*
 Create chart name and version as used by the chart label.
 */}}
@@ -42,12 +50,32 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
+{{- define "geoserver.master.labels" -}}
+{{ include "geoserver.labels" . }}
+app.kubernetes.io/component: master
+{{- end }}
+
+{{- define "geoserver.slave.labels" -}}
+{{ include "geoserver.labels" . }}
+app.kubernetes.io/component: slave
+{{- end }}
+
 {{/*
 Selector labels
 */}}
 {{- define "geoserver.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "geoserver.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{- define "geoserver.master.selectorLabels" -}}
+{{ include "geoserver.selectorLabels" . }}
+app.kubernetes.io/component: master
+{{- end }}
+
+{{- define "geoserver.slave.selectorLabels" -}}
+{{ include "geoserver.selectorLabels" . }}
+app.kubernetes.io/component: slave
 {{- end }}
 
 {{/*
@@ -59,11 +87,4 @@ Create the name of the service account to use
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
-{{- end }}
-
-{{/*
-Geoserver data PVC
-*/}}
-{{- define "geoserver.pvcName" -}}
-{{ printf "%s-data" ( include "geoserver.fullname" . ) }}
 {{- end }}

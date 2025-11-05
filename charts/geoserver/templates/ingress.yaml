@@ -1,6 +1,8 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "geoserver.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
+{{- $masterFullName := include "geoserver.master.fullname" . -}}
+{{- $masterSvcPort := .Values.master.service.port -}}
+{{- $slaveFullName := include "geoserver.slave.fullname" . -}}
+{{- $slaveSvcPort := .Values.slave.service.port -}}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
@@ -15,7 +17,7 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ include "geoserver.fullname" . }}
   labels:
     {{- include "geoserver.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
@@ -26,36 +28,44 @@ spec:
   {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.ingress.className }}
   {{- end }}
-  {{- if .Values.ingress.tls }}
+  {{- with .Values.ingress.host }}
+  {{- if .tlsSecretName }}
   tls:
-    {{- range .Values.ingress.tls }}
     - hosts:
-        {{- range .hosts }}
-        - {{ . | quote }}
-        {{- end }}
-      secretName: {{ .secretName }}
-    {{- end }}
+        - {{ .name | quote }}
+      secretName: {{ .tlsSecretName }}
   {{- end }}
   rules:
-    {{- range .Values.ingress.hosts }}
-    - host: {{ .host | quote }}
+    - host: {{ .name | quote }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
+          - path: {{ .paths.master.path }}
+            {{- if and .paths.master.pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: {{ .paths.master.pathType }}
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}
+                name: {{ $masterFullName }}
                 port:
-                  number: {{ $svcPort }}
+                  number: {{ $masterSvcPort }}
               {{- else }}
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
+              serviceName: {{ $masterFullName }}
+              servicePort: {{ $masterSvcPort }}
               {{- end }}
-          {{- end }}
-    {{- end }}
+          - path: {{ .paths.slave.path }}
+            {{- if and .paths.slave.pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: {{ .paths.slave.pathType }}
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $slaveFullName }}
+                port:
+                  number: {{ $slaveSvcPort }}
+              {{- else }}
+              serviceName: {{ $slaveFullName }}
+              servicePort: {{ $slaveSvcPort }}
+              {{- end }}
+  {{- end }}
 {{- end }}

@@ -1,0 +1,29 @@
+{{- if .Values.master.pvc.enabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "geoserver.fullname" . }}
+  labels:
+    {{- include "geoserver.labels" . | nindent 4 }}
+{{- with .Values.master.pvc -}}
+  {{- if .keep }}
+  annotations:
+    helm.sh/resource-policy: keep
+  {{- end }}
+spec:
+  volumeMode: Filesystem
+  {{- if .volumeName }}
+  volumeName: {{ .volumeName | quote }}
+  {{- end }}
+  accessModes:
+    {{- range .storage.accessModes }}
+    - {{ . }}
+    {{- end }}
+  {{-  if and (not .volumeName ) .storage.className }}
+  storageClassName: {{ .storage.className | quote }}
+  {{- end -}}
+  resources:
+    requests:
+      storage: {{ .storage.size }}
+{{- end -}}
+{{- end }}

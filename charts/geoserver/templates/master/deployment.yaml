@@ -1,26 +1,25 @@
-{{- if not .Values.stateful -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "geoserver.fullname" . }}
+  name: {{ include "geoserver.master.fullname" . }}
   labels:
-    {{- include "geoserver.labels" . | nindent 4 }}
+    {{- include "geoserver.master.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  {{- if not .Values.master.autoscaling.enabled }}
+  replicas: {{ .Values.master.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
-      {{- include "geoserver.selectorLabels" . | nindent 6 }}
+      {{- include "geoserver.master.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       annotations:
         rollme: {{ randAlphaNum 5 | quote }}
-        {{- with .Values.podAnnotations }}
+        {{- with .Values.master.podAnnotations }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
       labels:
-        {{- include "geoserver.selectorLabels" . | nindent 8 }}
+        {{- include "geoserver.master.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -28,40 +27,39 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "geoserver.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- with .Values.extraVolumes }}
+        {{- toYaml .Values.master.podSecurityContext | nindent 8 }}
       volumes:
-        {{- if .Values.config.data.enabled }}
+        {{- if .Values.master.pvc.enabled }}
         - name: geoserver-data
           persistentVolumeClaim:
-            claimName:  {{ include "geoserver.pvcName" . }}
+            claimName:  {{ include "geoserver.master.fullname" . }}
         {{- end }}
-        {{- with .Values.extraVolumes }}
+        {{- with .Values.master.extraVolumes }}
         {{- toYaml . | nindent 8 }}
         {{- end }}
-      {{- with .Values.extraHosts }}
+      {{- with .Values.master.extraHosts }}
       hostAliases:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml .Values.master.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: tcp-{{ .Values.service.port }}
-              containerPort: {{ .Values.service.port }}
+            - name: tcp-{{ .Values.master.service.port }}
+              containerPort: {{ .Values.master.service.port }}
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: {{ include "geoserver.fullname" . }}          
-          {{- with .Values.initContainers }}
+                name: {{ include "geoserver.master.fullname" . }}          
+          {{- with .Values.master.initContainers }}
           initContainers:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          {{- with .Values.extraVolumeMounts }}
-          volumeMounts:            
+          {{- with .Values.master.extraVolumeMounts }}
+          volumeMounts:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           livenessProbe:
@@ -69,24 +67,23 @@ spec:
               command: 
                 - curl 
                 - "-fs" 
-                - http://localhost:{{ .Values.service.port }}{{ .Values.config.contextPath | default "/geoserver" }}
+                - http://localhost:{{ .Values.master.service.port }}{{ .Values.master.config.contextPath | default "/geoserver" }}
             initialDelaySeconds: 60
             timeoutSeconds: 1
             periodSeconds: 30
             successThreshold: 1
             failureThreshold: 3
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+            {{- toYaml .Values.master.resources | nindent 12 }}
+      {{- with .Values.master.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.affinity }}
+      {{- with .Values.master.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      {{- with .Values.tolerations }}
+      {{- with .Values.master.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-{{- end -}}

@@ -1,6 +1,6 @@
 apiVersion: v2
 name: geoserver
-version: 0.7.0
+version: 1.0.0
 description: |-
   GeoServer is an open source server for sharing geospatial data. 
   Designed for interoperability, it publishes data from any major spatial data source using open standards
@@ -20,4 +20,11 @@ maintainers:
   - name: Carlos Eduardo Mota
     email: carlos.mota@sgb.gov.br
 icon: "https://geoserver.org/img/geoserver-logo.png"
-appVersion: "2.26.2"
+appVersion: "testing"
+dependencies:
+  - name: activemq-classic
+    version: "0.1.0"
+    # repository: "https://nds-cprm.github.io/helm-charts/"
+    repository: "file:///home/mota/vscode/helm-charts/charts/activemq-classic"
+    alias: activemq
+    condition: cluster.enabled
