@@ -32,10 +32,8 @@ ingress:
     tlsSecretName: ""
     paths:
       master:
-        path: /geoserver-admin
         pathType: ImplementationSpecific
       slave: 
-        path: /geoserver
         pathType: ImplementationSpecific
 
 # Add support for initContainers
@@ -62,7 +60,8 @@ extraVolumeMounts: []
 #   readOnly: true
 
 cluster:
-  enabled: true
+  enabled: false
+  brokerURL: ""
 
 master:
   replicaCount: 1
@@ -145,7 +144,7 @@ master:
         - ReadOnlyMany
 
   config:
-    contextPath: "/geoserver-admin"
+    contextPath: ""
     gwc:
       cacheDir: ""
     jvm:

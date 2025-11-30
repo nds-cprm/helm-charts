@@ -1,8 +1,11 @@
 {{- if .Values.ingress.enabled -}}
 {{- $masterFullName := include "geoserver.master.fullname" . -}}
+{{- $masterContextPath := include "geoserver.master.contextPath" . -}}
 {{- $masterSvcPort := .Values.master.service.port -}}
 {{- $slaveFullName := include "geoserver.slave.fullname" . -}}
+{{- $slaveContextPath := include "geoserver.slave.contextPath" . -}}
 {{- $slaveSvcPort := .Values.slave.service.port -}}
+
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
@@ -39,7 +42,7 @@ spec:
     - host: {{ .name | quote }}
       http:
         paths:
-          - path: {{ .paths.master.path }}
+          - path: {{ $masterContextPath }}
             {{- if and .paths.master.pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
             pathType: {{ .paths.master.pathType }}
             {{- end }}
@@ -53,7 +56,7 @@ spec:
               serviceName: {{ $masterFullName }}
               servicePort: {{ $masterSvcPort }}
               {{- end }}
-          - path: {{ .paths.slave.path }}
+          - path: {{ $slaveContextPath }}
             {{- if and .paths.slave.pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
             pathType: {{ .paths.slave.pathType }}
             {{- end }}

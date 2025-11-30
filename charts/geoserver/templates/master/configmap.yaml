@@ -1,8 +1,8 @@
 {{- $slaveEnabled := .Values.cluster.enabled -}}
-{{- $host := .Values.ingress.host.name -}}
-{{- $path := .Values.ingress.host.paths.master.path -}}
-{{- $proxyBaseURL := printf "http%s://%s%s" (ternary "" "s" (empty .Values.ingress.host.tlsSecretName)) $host $path -}}
-{{- $brokerURL := printf "tcp://%s:61616" (include "activemq.fullname" .Subcharts.activemq) -}}
+{{- $path := include "geoserver.master.contextPath" . -}}
+{{- $proxyBaseURL := include "geoserver.master.proxyBaseURL" . -}}
+{{- $brokerURL := include "geoserver.cluster.brokerURL" . -}}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -21,7 +21,7 @@ data:
   # TODO: check relation between PROXY_BASE_URL and ingresses
   PROXY_BASE_URL: {{ .config.proxyBaseURL | default $proxyBaseURL }}
 
-  GEOSERVER_CONTEXT_PATH: {{ ternary $path .config.contextPath $.Values.ingress.enabled }}
+  GEOSERVER_CONTEXT_PATH: {{ $path }}
   {{- if .pvc.enabled }}
   GEOSERVER_DATA_DIR: {{ .pvc.mountPath | quote }} 
   {{- end }}
@@ -45,11 +45,11 @@ data:
   # cluster
   CLUSTER_CONFIG_TOGGLE_MASTER: {{ (ternary "true" .config.cluster.toggleMaster $slaveEnabled) | quote }}
   CLUSTER_CONFIG_TOGGLE_SLAVE: {{ .config.cluster.toggleSlave | quote }}
-  CLUSTER_CONFIG_READONLY: {{ (ternary "enabled" "disabled" .config.cluster.readonly) | quote }}
+  CLUSTER_CONFIG_READONLY: {{ (ternary "enabled" "disabled" .config.cluster.readonly) }}
   # cluster broker
-  CLUSTER_CONFIG_EMBEDDED_BROKER: {{ (ternary "enabled" "disabled" .config.cluster.embeddedBroker) | quote }}
+  CLUSTER_CONFIG_EMBEDDED_BROKER: {{ (ternary "enabled" "disabled" .config.cluster.embeddedBroker) }}
   {{- if not .config.cluster.embeddedBroker }}
-  CLUSTER_CONFIG_BROKER_URL: {{ .config.cluster.brokerURL | default $brokerURL }} 
+  CLUSTER_CONFIG_BROKER_URL: {{ $brokerURL | quote }} 
   {{- end }}
   CLUSTER_CONFIG_DURABLE: {{ .config.cluster.durable | quote }}
   # cluster connection
