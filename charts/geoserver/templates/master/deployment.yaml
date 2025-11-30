@@ -1,3 +1,4 @@
+{{- $pvcEnabled := or .Values.master.pvc.enabled .Values.cluster.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -28,18 +29,21 @@ spec:
       serviceAccountName: {{ include "geoserver.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.master.podSecurityContext | nindent 8 }}
+      {{- $extraInitContainers := concat .Values.initContainers .Values.master.initContainers }}
+      {{- if $extraInitContainers }}
+      initContainers:
+        {{- $extraInitContainers | uniq | toYaml | nindent 8 }}
+      {{- end }}
+      {{- $dataVolume := ternary (list (dict "name" "geoserver-data" "persistentVolumeClaim" (dict "claimName" (include "geoserver.master.fullname" .)))) list $pvcEnabled }}
+      {{- $extraVolumes := concat .Values.extraVolumes .Values.master.extraVolumes $dataVolume }}
+      {{- if $extraVolumes }}
       volumes:
-        {{- if .Values.master.pvc.enabled }}
-        - name: geoserver-data
-          persistentVolumeClaim:
-            claimName:  {{ include "geoserver.master.fullname" . }}
-        {{- end }}
-        {{- with .Values.master.extraVolumes }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
-      {{- with .Values.master.extraHosts }}
+        {{- $extraVolumes | uniq | toYaml | nindent 8 }}
+      {{- end }}      
+      {{- $extraHosts := concat .Values.extraHosts .Values.master.extraHosts }}
+      {{- if $extraHosts }}
       hostAliases:
-        {{- toYaml . | nindent 8 }}
+        {{- $extraHosts | uniq | toYaml | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -53,14 +57,12 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: {{ include "geoserver.master.fullname" . }}          
-          {{- with .Values.master.initContainers }}
-          initContainers:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.master.extraVolumeMounts }}
+                name: {{ include "geoserver.master.fullname" . }}
+          {{- $dataVolumeMount := ternary ( list (dict "name" "geoserver-data" "mountPath" .Values.master.pvc.mountPath)) list $pvcEnabled }}
+          {{- $extraVolumeMounts := concat .Values.extraVolumeMounts .Values.master.extraVolumeMounts $dataVolumeMount }}
+          {{- if $extraVolumeMounts }}
           volumeMounts:
-            {{- toYaml . | nindent 12 }}
+            {{- $extraVolumeMounts | uniq | toYaml | nindent 12 }}
           {{- end }}
           livenessProbe:
             exec:

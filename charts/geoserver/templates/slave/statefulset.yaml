@@ -30,13 +30,38 @@ spec:
       serviceAccountName: {{ include "geoserver.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.slave.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: copy-geoserver-data
+          image: docker.io/library/debian:trixie-slim
+          volumeMounts:
+            - name: master
+              mountPath: /srv/geoserver/src  # Caminho de onde os dados serão copiados
+              readOnly: true            # É boa prática montar a origem como só de leitura
+            - name: data-dir
+              mountPath: /srv/geoserver/dst
+          command: 
+            - sh
+            - "-c"
+            - "cp -rpuv /srv/geoserver/src/* /srv/geoserver/dst && rm -rf /srv/geoserver/dst/cluster"
+      {{- $extraInitContainers := concat .Values.initContainers .Values.slave.initContainers }}
+      {{- if $extraInitContainers }}
+        {{- $extraInitContainers | uniq | toYaml | nindent 8 }}
+      {{- end }}
       volumes:
-        {{- with .Values.slave.extraVolumes }}
-        {{- toYaml . | nindent 8 }}
-        {{- end }}
-      {{- with .Values.slave.extraHosts }}
+        - name: master
+          persistentVolumeClaim: 
+            claimName: {{ include "geoserver.master.fullname" . }}
+        - name: data-dir
+          emptyDir:
+            sizeLimit: 500Mi
+      {{- $extraVolumes := concat .Values.extraVolumes .Values.slave.extraVolumes }}
+      {{- if $extraVolumes }}      
+        {{- $extraVolumes | uniq | toYaml | nindent 8 }}
+      {{- end }}   
+      {{- $extraHosts := concat .Values.extraHosts .Values.slave.extraHosts }}
+      {{- if $extraHosts }}
       hostAliases:
-        {{- toYaml . | nindent 8 }}
+        {{- $extraHosts | uniq | toYaml | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
@@ -50,16 +75,13 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: {{ include "geoserver.slave.fullname" . }}          
-          {{- with .Values.slave.initContainers }}
-          initContainers:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+                name: {{ include "geoserver.slave.fullname" . }}
           volumeMounts:
             - mountPath: {{ .Values.slave.pvc.mountPath }}
-              name: {{ include "geoserver.slave.fullname" . }}
-            {{- with .Values.slave.extraVolumeMounts }}
-            {{- toYaml . | nindent 12 }}
+              name: data-dir
+            {{- $extraVolumeMounts := concat .Values.extraVolumeMounts .Values.master.extraVolumeMounts }}
+            {{- if $extraVolumeMounts }}
+            {{- $extraVolumeMounts | uniq | toYaml | nindent 12 }}
             {{- end }}
           livenessProbe:
             exec:
@@ -86,9 +108,9 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-  volumeClaimTemplates:
+  {{/*volumeClaimTemplates:
     - metadata:
-        name: {{ include "geoserver.slave.fullname" . }}
+        name: data-dir
         labels:
           {{- include "geoserver.slave.labels" . | nindent 10 }}
       spec:
@@ -105,5 +127,5 @@ spec:
         {{- end }}
         resources:
           requests:
-            storage: {{ .Values.slave.pvc.storage.size }}
+            storage: {{ .Values.slave.pvc.storage.size }}*/}}
 {{- end -}}

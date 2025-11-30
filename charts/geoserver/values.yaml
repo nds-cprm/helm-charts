@@ -38,6 +38,29 @@ ingress:
         path: /geoserver
         pathType: ImplementationSpecific
 
+# Add support for initContainers
+initContainers: []
+
+# extra hosts for container's /etc/hosts
+extraHosts: []
+  # - ip: 127.0.0.1
+  #   hostnames:
+  #     - localhost.localdomain
+  #     - localhost
+
+# Additional volumes on the output Deployment definition.
+extraVolumes: []
+# - name: foo
+#   secret:
+#     secretName: mysecret
+#     optional: false
+
+# Additional volumeMounts on the output Deployment definition.
+extraVolumeMounts: []
+# - name: foo
+#   mountPath: "/etc/foo"
+#   readOnly: true
+
 cluster:
   enabled: true
 
@@ -111,7 +134,7 @@ master:
 
   pvc:
     enabled: false
-    keep: true
+    keep: false
     volumeName: ""
     mountPath: /srv/geoserver/data
     storage: 
@@ -119,6 +142,7 @@ master:
       size: 5Gi
       accessModes:
         - ReadWriteOnce
+        - ReadOnlyMany
 
   config:
     contextPath: "/geoserver-admin"
@@ -231,7 +255,7 @@ slave:
         - ReadWriteOnce
 
   config:
-    contextPath: "/geoserver"
+    contextPath: ""
     gwc:
       cacheDir: ""
     jvm:
@@ -240,7 +264,7 @@ slave:
       GEOSERVER_OPTS: ""
     proxyBaseURL: ""
     console:
-      disabled: false
+      disabled: true
     cors:
       allowedOrigins: []
     csrf: 
@@ -274,3 +298,15 @@ activemq:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
+
+nginx:
+  enabled: false
+  overrides:
+    default:
+      enabled: true
+      name: geoservicos-inde-nginx-config
+      type: configMap
+    html:
+      enabled: true
+      name: geoservicos-inde-nginx-html
+      type: configMap

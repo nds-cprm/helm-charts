@@ -1,4 +1,4 @@
-{{- $slaveEnabled := .Values.slave.enabled -}}
+{{- $slaveEnabled := .Values.cluster.enabled -}}
 {{- $host := .Values.ingress.host.name -}}
 {{- $path := .Values.ingress.host.paths.master.path -}}
 {{- $proxyBaseURL := printf "http%s://%s%s" (ternary "" "s" (empty .Values.ingress.host.tlsSecretName)) $host $path -}}
@@ -18,14 +18,14 @@ data:
   {{- if .config.jvm.GEOSERVER_OPTS }} 
   GEOSERVER_OPTS: {{ .config.jvm.GEOSERVER_OPTS | quote }}
   {{- end }}
-  {{- if $.Values.ingress.enabled }}
+  # TODO: check relation between PROXY_BASE_URL and ingresses
   PROXY_BASE_URL: {{ .config.proxyBaseURL | default $proxyBaseURL }}
-  {{- end }}
+
   GEOSERVER_CONTEXT_PATH: {{ ternary $path .config.contextPath $.Values.ingress.enabled }}
-  {{- if .pvc.enabled -}}
+  {{- if .pvc.enabled }}
   GEOSERVER_DATA_DIR: {{ .pvc.mountPath | quote }} 
   {{- end }}
-  {{- if .config.gwc.cacheDir -}}
+  {{- if .config.gwc.cacheDir }}
   GEOWEBCACHE_CACHE_DIR: {{ .config.gwc.cacheDir }}
   {{- end }}
   # disable console
@@ -37,7 +37,7 @@ data:
   {{- end }}
   # Marlin Renderer
   GEOSERVER_DISABLE_MARLIN: {{ .config.marlinRenderer.disabled | toString | lower | quote  }} 
-  {{- if .config.appSchema.propertiesFile -}} 
+  {{- if .config.appSchema.propertiesFile }} 
   GEOSERVER_APPSCHEMA_PROPERTIES_FILE: {{ .config.appSchema.propertiesFile }}
   {{- end }}
   # CORS
@@ -53,7 +53,7 @@ data:
   {{- end }}
   CLUSTER_CONFIG_DURABLE: {{ .config.cluster.durable | quote }}
   # cluster connection
-  CLUSTER_CONFIG_CONNECTION: {{ .config.cluster.connection.enabled | quote }}
+  CLUSTER_CONFIG_CONNECTION: {{ (ternary "enabled" "disabled" .config.cluster.connection.enabled) | quote }}
   CLUSTER_CONFIG_CONNECTION_RETRY: "{{ .config.cluster.connection.retry }}"
   CLUSTER_CONFIG_CONNECTION_MAXWAIT: "{{ .config.cluster.connection.maxWait }}"
 {{- end -}}
