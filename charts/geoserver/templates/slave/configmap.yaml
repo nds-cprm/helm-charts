@@ -19,8 +19,10 @@ data:
   {{- if .config.jvm.GEOSERVER_OPTS }} 
   GEOSERVER_OPTS: {{ .config.jvm.GEOSERVER_OPTS | quote }}
   {{- end }}  
-  # Proxy Base URL
+  # Proxy Base URL (Only if ingress enabled)
+  {{- if $.Values.ingress.enabled }}
   PROXY_BASE_URL: {{ $proxyBaseURL }}
+  {{- end }}
   # Change geoserver context path
   GEOSERVER_CONTEXT_PATH: {{ $path }}
   {{- if .pvc.enabled }}
@@ -32,10 +34,13 @@ data:
   # disable console
   GEOSERVER_CONSOLE_DISABLED: {{ .config.console.disabled | toString | lower | quote  }}
   # CSRF
-  GEOSERVER_CSRF_DISABLED: {{ .config.csrf.disabled | toString | lower | quote  }}  
+  GEOSERVER_CSRF_DISABLED: {{ .config.csrf.disabled | toString | lower | quote  }}
   {{- if not .config.csrf.disabled }}
-  {{- $csrfWhiteList := ternary $host ( join "," (prepend .config.csrf.whitelist $host) ) (empty .config.csrf.whitelist) }}
-  GEOSERVER_CSRF_WHITELIST: {{ $csrfWhiteList }}
+  {{- $csrfWhiteList := ternary list .config.csrf.whitelist (empty .config.csrf.whitelist) }}
+  {{- if $.Values.ingress.enabled }}
+  {{- $csrfWhiteList := prepend .config.csrf.whitelist $host }}
+  {{- end }}
+  GEOSERVER_CSRF_WHITELIST: {{ join "," $csrfWhiteList }}
   {{- end }}
   # Marlin Renderer
   GEOSERVER_DISABLE_MARLIN: {{ .config.marlinRenderer.disabled | toString | lower | quote  }} 
