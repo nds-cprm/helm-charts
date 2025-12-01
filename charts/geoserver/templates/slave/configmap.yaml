@@ -1,4 +1,5 @@
 {{- if .Values.cluster.enabled -}}
+{{- $host := .Values.ingress.host.name -}}
 {{- $path := include "geoserver.slave.contextPath" . -}}
 {{- $proxyBaseURL := include "geoserver.slave.proxyBaseURL" . -}}
 {{- $brokerURL := include "geoserver.cluster.brokerURL" . -}}
@@ -18,8 +19,8 @@ data:
   {{- if .config.jvm.GEOSERVER_OPTS }} 
   GEOSERVER_OPTS: {{ .config.jvm.GEOSERVER_OPTS | quote }}
   {{- end }}  
-  # TODO: check relation between PROXY_BASE_URL and ingresses
-  PROXY_BASE_URL: {{ .config.proxyBaseURL | default $proxyBaseURL }}
+  # Proxy Base URL
+  PROXY_BASE_URL: {{ $proxyBaseURL }}
   # Change geoserver context path
   GEOSERVER_CONTEXT_PATH: {{ $path }}
   {{- if .pvc.enabled }}
@@ -32,8 +33,9 @@ data:
   GEOSERVER_CONSOLE_DISABLED: {{ .config.console.disabled | toString | lower | quote  }}
   # CSRF
   GEOSERVER_CSRF_DISABLED: {{ .config.csrf.disabled | toString | lower | quote  }}  
-  {{- if not (empty .config.csrf.whitelist) }}
-  GEOSERVER_CSRF_WHITELIST: {{ ( join "," .config.csrf.whitelist ) | quote }}
+  {{- if not .config.csrf.disabled }}
+  {{- $csrfWhiteList := ternary $host ( join "," (prepend .config.csrf.whitelist $host) ) (empty .config.csrf.whitelist) }}
+  GEOSERVER_CSRF_WHITELIST: {{ $csrfWhiteList }}
   {{- end }}
   # Marlin Renderer
   GEOSERVER_DISABLE_MARLIN: {{ .config.marlinRenderer.disabled | toString | lower | quote  }} 
@@ -47,13 +49,11 @@ data:
   CLUSTER_CONFIG_TOGGLE_MASTER: "false"
   CLUSTER_CONFIG_TOGGLE_SLAVE: "true"
   CLUSTER_CONFIG_READONLY: {{ (ternary "enabled" "disabled" .Values.cluster.readOnly) }}
-  # cluster broker
   CLUSTER_CONFIG_EMBEDDED_BROKER: {{ (ternary "enabled" "disabled" .Values.cluster.embeddedBroker) }}
   {{- if not .Values.cluster.embeddedBroker }}
   CLUSTER_CONFIG_BROKER_URL: {{ $brokerURL | quote }} 
   {{- end }}
   CLUSTER_CONFIG_DURABLE: {{ .Values.cluster.durable | quote }}
-  # cluster connection
   {{- with .Values.slave.config.cluster.connection }} 
   CLUSTER_CONFIG_CONNECTION: {{ (ternary "enabled" "disabled" .enabled) | quote }}
   CLUSTER_CONFIG_CONNECTION_RETRY: "{{ .retry }}"
