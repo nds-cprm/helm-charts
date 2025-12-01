@@ -88,3 +88,41 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Context Paths
+*/}}
+{{- define "geoserver.master.contextPath" -}}
+{{- .Values.master.config.contextPath | default (ternary "/geoserver-admin" "/geoserver" .Values.cluster.enabled) }}
+{{- end -}}
+
+{{- define "geoserver.slave.contextPath" -}}
+{{- if .Values.cluster.enabled -}}
+{{- $path := .Values.slave.config.contextPath | default "/geoserver" }}
+{{- if eq $path (include "geoserver.master.contextPath" .) -}}
+{{- fail "The master and slave contexts can't be equal" -}}
+{{- end -}}
+{{- $path }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Cluster URLs
+*/}}
+{{- define "geoserver.master.proxyBaseURL" -}}
+{{- $host := .Values.ingress.host.name -}}
+{{- $path := (include "geoserver.master.contextPath" .) -}}
+{{  printf "http%s://%s%s" (ternary "" "s" (empty .Values.ingress.host.tlsSecretName)) $host $path -}}
+{{- end -}}
+
+{{- define "geoserver.slave.proxyBaseURL" -}}
+{{- $host := .Values.ingress.host.name -}}
+{{- $path := (include "geoserver.slave.contextPath" .) -}}
+{{  printf "http%s://%s%s" (ternary "" "s" (empty .Values.ingress.host.tlsSecretName)) $host $path -}}
+{{- end -}}
+
+{{- define "geoserver.cluster.brokerURL" -}}
+{{- if .Values.cluster.enabled -}}
+{{- .Values.cluster.brokerURL | default (printf "tcp://%s:61616" (include "activemq.fullname" .Subcharts.activemq)) }}
+{{- end -}}
+{{- end -}}

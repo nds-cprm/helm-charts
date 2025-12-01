@@ -18,11 +18,10 @@ data:
   {{- end }}
   {{- if .config.jvm.GEOSERVER_OPTS }} 
   GEOSERVER_OPTS: {{ .config.jvm.GEOSERVER_OPTS | quote }}
-  {{- end }}
-  
+  {{- end }}  
   # TODO: check relation between PROXY_BASE_URL and ingresses
   PROXY_BASE_URL: {{ .config.proxyBaseURL | default $proxyBaseURL }}
-
+  # Change geoserver context path
   GEOSERVER_CONTEXT_PATH: {{ $path }}
   {{- if .pvc.enabled }}
   GEOSERVER_DATA_DIR: {{ .pvc.mountPath | quote }} 
