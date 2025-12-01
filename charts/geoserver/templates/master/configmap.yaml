@@ -8,6 +8,13 @@ kind: ConfigMap
 metadata:
   name: {{ include "geoserver.master.fullname" . }}
 data:
+  # Storage
+  {{- if or .Values.pvc.data.enabled .Values.cluster.enabled }}
+  GEOSERVER_DATA_DIR: {{ .Values.pvc.data.mountPath | quote }} 
+  {{- end }}
+  {{- if or .Values.pvc.cache.enabled .Values.cluster.enabled }}
+  GEOWEBCACHE_CACHE_DIR: {{ .Values.pvc.cache.mountPath | quote }}
+  {{- end }}
 {{- with .Values.master }}            
   {{- if .config.jvm.JAVA_OPTS }}
   JAVA_OPTS: {{ .config.jvm.JAVA_OPTS | quote }}
@@ -18,18 +25,12 @@ data:
   {{- if .config.jvm.GEOSERVER_OPTS }} 
   GEOSERVER_OPTS: {{ .config.jvm.GEOSERVER_OPTS | quote }}
   {{- end }}
-    # Proxy Base URL (Only if ingress enabled)
+  # Proxy Base URL (Only if ingress enabled)
   {{- if $.Values.ingress.enabled }}
   PROXY_BASE_URL: {{ $proxyBaseURL }}
   {{- end }}
   # Change geoserver context path
   GEOSERVER_CONTEXT_PATH: {{ $path }}
-  {{- if .pvc.enabled }}
-  GEOSERVER_DATA_DIR: {{ .pvc.mountPath | quote }} 
-  {{- end }}
-  {{- if .config.gwc.cacheDir }}
-  GEOWEBCACHE_CACHE_DIR: {{ .config.gwc.cacheDir }}
-  {{- end }}
   # disable console
   GEOSERVER_CONSOLE_DISABLED: {{ .config.console.disabled | toString | lower | quote  }}
   # CSRF

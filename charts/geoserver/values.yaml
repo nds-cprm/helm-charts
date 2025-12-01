@@ -59,6 +59,29 @@ extraVolumeMounts: []
 #   mountPath: "/etc/foo"
 #   readOnly: true
 
+pvc:
+  data:
+    enabled: false   # Ignored when cluster.enabled=true
+    keep: false
+    volumeName: ""
+    mountPath: /srv/geoserver/data
+    storage: 
+      className: ""
+      size: 5Gi
+      accessModes:
+        - ReadWriteOnce
+        - ReadOnlyMany
+  cache:
+    enabled: false   # Ignored when cluster.enabled=true
+    keep: false
+    volumeName: ""
+    mountPath: /srv/geoserver/cache
+    storage: 
+      className: ""
+      size: 5Gi
+      accessModes:
+        - ReadWriteMany
+
 cluster:
   enabled: false
   readOnly: false   # enabled/disabled
@@ -134,22 +157,8 @@ master:
 
   affinity: {}
 
-  pvc:
-    enabled: false
-    keep: false
-    volumeName: ""
-    mountPath: /srv/geoserver/data
-    storage: 
-      className: ""
-      size: 5Gi
-      accessModes:
-        - ReadWriteOnce
-        - ReadOnlyMany
-
   config:
     contextPath: ""
-    gwc:
-      cacheDir: ""
     jvm:
       JAVA_OPTS: ""
       CATALINA_OPTS: ""
@@ -167,12 +176,6 @@ master:
     appSchema:
       propertiesFile: "" 
     cluster:
-      # readonly: false # enabled/disabled
-      # durable: false
-      # brokerURL: ""
-      # embeddedBroker: false # enabled/disabled
-      # toggleMaster: false
-      # toggleSlave: false
       connection:
         enabled: false
         retry: 10
@@ -246,20 +249,8 @@ slave:
 
   affinity: {}
 
-  pvc:
-    enabled: false
-    volumeName: ""
-    mountPath: /srv/geoserver/data
-    storage: 
-      className: ""
-      size: 5Gi
-      accessModes:
-        - ReadWriteOnce
-
   config:
     contextPath: ""
-    gwc:
-      cacheDir: ""
     jvm:
       JAVA_OPTS: ""
       CATALINA_OPTS: ""
@@ -277,12 +268,6 @@ slave:
     appSchema:
       propertiesFile: "" 
     cluster:
-      # readonly: true # enabled/disabled
-      # durable: false
-      # brokerURL: ""
-      # embeddedBroker: false # enabled/disabled
-      # toggleMaster: false
-      # toggleSlave: true
       connection:
         enabled: true
         retry: 10

@@ -1,4 +1,5 @@
-{{- $pvcEnabled := or .Values.master.pvc.enabled .Values.cluster.enabled -}}
+{{- $pvcDataEnabled := or .Values.pvc.data.enabled .Values.cluster.enabled -}}
+{{- $pvcCacheEnabled := or .Values.pvc.cache.enabled .Values.cluster.enabled -}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -34,8 +35,9 @@ spec:
       initContainers:
         {{- $extraInitContainers | uniq | toYaml | nindent 8 }}
       {{- end }}
-      {{- $dataVolume := ternary (list (dict "name" "geoserver-data" "persistentVolumeClaim" (dict "claimName" (include "geoserver.master.fullname" .)))) list $pvcEnabled }}
-      {{- $extraVolumes := concat .Values.extraVolumes .Values.master.extraVolumes $dataVolume }}
+      {{- $dataVolume := ternary (list (dict "name" "data" "persistentVolumeClaim" (dict "claimName" (include "geoserver.pvc.data.name" .)))) list $pvcDataEnabled }}
+      {{- $cacheVolume := ternary (list (dict "name" "cache" "persistentVolumeClaim" (dict "claimName" (include "geoserver.pvc.cache.name" .)))) list $pvcCacheEnabled }}
+      {{- $extraVolumes := concat .Values.extraVolumes .Values.master.extraVolumes $dataVolume $cacheVolume }}
       {{- if $extraVolumes }}
       volumes:
         {{- $extraVolumes | uniq | toYaml | nindent 8 }}
@@ -58,8 +60,9 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "geoserver.master.fullname" . }}
-          {{- $dataVolumeMount := ternary ( list (dict "name" "geoserver-data" "mountPath" .Values.master.pvc.mountPath)) list $pvcEnabled }}
-          {{- $extraVolumeMounts := concat .Values.extraVolumeMounts .Values.master.extraVolumeMounts $dataVolumeMount }}
+          {{- $dataVolumeMount := ternary ( list (dict "name" "data" "mountPath" .Values.pvc.data.mountPath)) list $pvcDataEnabled }}
+          {{- $cacheVolumeMount := ternary ( list (dict "name" "cache" "mountPath" .Values.pvc.cache.mountPath)) list $pvcCacheEnabled }}
+          {{- $extraVolumeMounts := concat .Values.extraVolumeMounts .Values.master.extraVolumeMounts $dataVolumeMount $cacheVolumeMount }}
           {{- if $extraVolumeMounts }}
           volumeMounts:
             {{- $extraVolumeMounts | uniq | toYaml | nindent 12 }}
@@ -69,7 +72,7 @@ spec:
               command: 
                 - curl 
                 - "-fs" 
-                - http://localhost:{{ .Values.master.service.port }}{{ .Values.master.config.contextPath | default "/geoserver" }}
+                - http://localhost:{{ .Values.master.service.port }}{{ include "geoserver.master.contextPath" . }}
             initialDelaySeconds: 60
             timeoutSeconds: 1
             periodSeconds: 30

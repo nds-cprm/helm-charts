@@ -1,12 +1,12 @@
-{{- $pvcEnabled := or .Values.master.pvc.enabled .Values.cluster.enabled -}}
+{{- $pvcEnabled := or .Values.pvc.cache.enabled .Values.cluster.enabled -}}
 {{- if $pvcEnabled -}}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "geoserver.master.fullname" . }}
+  name: {{ include "geoserver.pvc.cache.name" . }}
   labels:
-    {{- include "geoserver.master.labels" . | nindent 4 }}
-{{- with .Values.master.pvc -}}
+    {{- include "geoserver.labels" . | nindent 4 }}
+  {{- with .Values.pvc.cache -}}
   {{- if .keep }}
   annotations:
     helm.sh/resource-policy: keep
@@ -27,5 +27,5 @@ spec:
   resources:
     requests:
       storage: {{ .storage.size }}
-{{- end -}}
+  {{- end -}}
 {{- end }}

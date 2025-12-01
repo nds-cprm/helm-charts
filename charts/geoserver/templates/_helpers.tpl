@@ -89,6 +89,15 @@ Create the name of the service account to use
 {{- end }}
 {{- end }}
 
+{{/* PVC names */}}
+{{- define "geoserver.pvc.data.name" -}}
+{{ include "geoserver.fullname" . }}-data
+{{- end -}}
+
+{{- define "geoserver.pvc.cache.name" -}}
+{{ include "geoserver.fullname" . }}-cache
+{{- end -}}
+
 {{/*
 URLs and Context Paths
 */}}

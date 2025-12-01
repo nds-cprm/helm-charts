@@ -9,6 +9,9 @@ kind: ConfigMap
 metadata:
   name: {{ include "geoserver.slave.fullname" . }}
 data:
+  # Storage
+  GEOSERVER_DATA_DIR: {{ .Values.pvc.data.mountPath | quote }}
+  GEOWEBCACHE_CACHE_DIR: {{ .Values.pvc.cache.mountPath | quote }}
 {{- with .Values.slave }}            
   {{- if .config.jvm.JAVA_OPTS }}
   JAVA_OPTS: {{ .config.jvm.JAVA_OPTS | quote }}
@@ -25,12 +28,6 @@ data:
   {{- end }}
   # Change geoserver context path
   GEOSERVER_CONTEXT_PATH: {{ $path }}
-  {{- if .pvc.enabled }}
-  GEOSERVER_DATA_DIR: {{ .pvc.mountPath | quote }} 
-  {{- end }}
-  {{- if .config.gwc.cacheDir }}
-  GEOWEBCACHE_CACHE_DIR: {{ .config.gwc.cacheDir }}
-  {{- end }}
   # disable console
   GEOSERVER_CONSOLE_DISABLED: {{ .config.console.disabled | toString | lower | quote  }}
   # CSRF

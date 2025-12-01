@@ -34,10 +34,10 @@ spec:
         - name: copy-geoserver-data
           image: docker.io/library/debian:trixie-slim
           volumeMounts:
-            - name: master
+            - name: master-data
               mountPath: /srv/geoserver/src  # Caminho de onde os dados serão copiados
               readOnly: true            # É boa prática montar a origem como só de leitura
-            - name: data-dir
+            - name: slave-data
               mountPath: /srv/geoserver/dst
           command: 
             - sh
@@ -48,12 +48,15 @@ spec:
         {{- $extraInitContainers | uniq | toYaml | nindent 8 }}
       {{- end }}
       volumes:
-        - name: master
+        - name: master-data
           persistentVolumeClaim: 
-            claimName: {{ include "geoserver.master.fullname" . }}
-        - name: data-dir
+            claimName: {{ include "geoserver.pvc.data.name" . }}
+        - name: slave-data
           emptyDir:
             sizeLimit: 500Mi
+        - name: cache
+          persistentVolumeClaim: 
+            claimName: {{ include "geoserver.pvc.cache.name" . }}
       {{- $extraVolumes := concat .Values.extraVolumes .Values.slave.extraVolumes }}
       {{- if $extraVolumes }}      
         {{- $extraVolumes | uniq | toYaml | nindent 8 }}
@@ -77,8 +80,10 @@ spec:
             - configMapRef:
                 name: {{ include "geoserver.slave.fullname" . }}
           volumeMounts:
-            - mountPath: {{ .Values.slave.pvc.mountPath }}
-              name: data-dir
+            - mountPath: {{ .Values.pvc.data.mountPath }}
+              name: slave-data
+            - mountPath: {{ .Values.pvc.cache.mountPath }}
+              name: cache
             {{- $extraVolumeMounts := concat .Values.extraVolumeMounts .Values.master.extraVolumeMounts }}
             {{- if $extraVolumeMounts }}
             {{- $extraVolumeMounts | uniq | toYaml | nindent 12 }}
@@ -88,7 +93,7 @@ spec:
               command: 
                 - curl 
                 - "-fs" 
-                - http://localhost:{{ .Values.slave.service.port }}{{ .Values.slave.config.contextPath | default "/geoserver" }}
+                - http://localhost:{{ .Values.slave.service.port }}{{ include "geoserver.slave.contextPath" . }}
             initialDelaySeconds: 60
             timeoutSeconds: 1
             periodSeconds: 30
