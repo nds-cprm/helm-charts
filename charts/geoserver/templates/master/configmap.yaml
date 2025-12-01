@@ -1,4 +1,3 @@
-{{- $slaveEnabled := .Values.cluster.enabled -}}
 {{- $path := include "geoserver.master.contextPath" . -}}
 {{- $proxyBaseURL := include "geoserver.master.proxyBaseURL" . -}}
 {{- $brokerURL := include "geoserver.cluster.brokerURL" . -}}
@@ -41,19 +40,19 @@ data:
   GEOSERVER_APPSCHEMA_PROPERTIES_FILE: {{ .config.appSchema.propertiesFile }}
   {{- end }}
   # CORS
-  GEOSERVER_CORS_ALLOWED_ORIGINS: {{ ( join "," .config.cors.allowedOrigins ) | quote }}
+  GEOSERVER_CORS_ALLOWED_ORIGINS: {{ ( join "," .config.cors.allowedOrigins ) | quote }}  
+{{- end -}}
+{{- if .Values.cluster.enabled }}
   # cluster
-  CLUSTER_CONFIG_TOGGLE_MASTER: {{ (ternary "true" .config.cluster.toggleMaster $slaveEnabled) | quote }}
-  CLUSTER_CONFIG_TOGGLE_SLAVE: {{ .config.cluster.toggleSlave | quote }}
-  CLUSTER_CONFIG_READONLY: {{ (ternary "enabled" "disabled" .config.cluster.readonly) }}
+  CLUSTER_CONFIG_TOGGLE_MASTER: "true"
+  CLUSTER_CONFIG_TOGGLE_SLAVE: "false"
+  CLUSTER_CONFIG_READONLY: "disabled"  # Master is always disabled
   # cluster broker
-  CLUSTER_CONFIG_EMBEDDED_BROKER: {{ (ternary "enabled" "disabled" .config.cluster.embeddedBroker) }}
-  {{- if not .config.cluster.embeddedBroker }}
+  CLUSTER_CONFIG_EMBEDDED_BROKER: {{ (ternary "enabled" "disabled" .Values.cluster.embeddedBroker) }}
+  {{- if not .Values.cluster.embeddedBroker }}
   CLUSTER_CONFIG_BROKER_URL: {{ $brokerURL | quote }} 
   {{- end }}
-  CLUSTER_CONFIG_DURABLE: {{ .config.cluster.durable | quote }}
+  CLUSTER_CONFIG_DURABLE: {{ .Values.cluster.durable | quote }}
   # cluster connection
-  CLUSTER_CONFIG_CONNECTION: {{ (ternary "enabled" "disabled" .config.cluster.connection.enabled) | quote }}
-  CLUSTER_CONFIG_CONNECTION_RETRY: "{{ .config.cluster.connection.retry }}"
-  CLUSTER_CONFIG_CONNECTION_MAXWAIT: "{{ .config.cluster.connection.maxWait }}"
-{{- end -}}
+  CLUSTER_CONFIG_CONNECTION: "disabled"  # Master is always disabled
+{{- end }}

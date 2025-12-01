@@ -61,6 +61,9 @@ extraVolumeMounts: []
 
 cluster:
   enabled: false
+  readOnly: false   # enabled/disabled
+  durable: false
+  embeddedBroker: false # enabled/disabled
   brokerURL: ""
 
 master:
@@ -164,12 +167,12 @@ master:
     appSchema:
       propertiesFile: "" 
     cluster:
-      readonly: false # enabled/disabled
-      durable: false
-      brokerURL: ""
-      embeddedBroker: false # enabled/disabled
-      toggleMaster: false
-      toggleSlave: false
+      # readonly: false # enabled/disabled
+      # durable: false
+      # brokerURL: ""
+      # embeddedBroker: false # enabled/disabled
+      # toggleMaster: false
+      # toggleSlave: false
       connection:
         enabled: false
         retry: 10
@@ -274,12 +277,12 @@ slave:
     appSchema:
       propertiesFile: "" 
     cluster:
-      readonly: true # enabled/disabled
-      durable: true
-      brokerURL: ""
-      embeddedBroker: false # enabled/disabled
-      toggleMaster: false
-      toggleSlave: true
+      # readonly: true # enabled/disabled
+      # durable: false
+      # brokerURL: ""
+      # embeddedBroker: false # enabled/disabled
+      # toggleMaster: false
+      # toggleSlave: true
       connection:
         enabled: true
         retry: 10
