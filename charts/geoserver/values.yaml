@@ -30,11 +30,6 @@ ingress:
   host: 
     name: geoserver.minikube.local
     tlsSecretName: ""
-    paths:
-      master:
-        pathType: ImplementationSpecific
-      slave: 
-        pathType: ImplementationSpecific
 
 # Add support for initContainers
 initContainers: []
@@ -89,6 +84,8 @@ cluster:
   embeddedBroker: false # enabled/disabled
   brokerURL: ""
 
+
+# Specific
 master:
   replicaCount: 1
 

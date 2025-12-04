@@ -43,8 +43,8 @@ spec:
       http:
         paths:
           - path: {{ $masterContextPath }}
-            {{- if and .paths.master.pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .paths.master.pathType }}
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: ImplementationSpecific
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
@@ -57,8 +57,8 @@ spec:
               servicePort: {{ $masterSvcPort }}
               {{- end }}
           - path: {{ $slaveContextPath }}
-            {{- if and .paths.slave.pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .paths.slave.pathType }}
+            {{- if semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion }}
+            pathType: ImplementationSpecific
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
