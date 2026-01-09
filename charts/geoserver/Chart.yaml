@@ -23,7 +23,7 @@ icon: "https://geoserver.org/img/geoserver-logo.png"
 appVersion: "2.27.3"
 dependencies:
   - name: activemq-classic
-    version: "0.1.0"
+    version: "0.1.1"
     repository: "https://nds-cprm.github.io/helm-charts/"
     alias: activemq
     condition: cluster.enabled
