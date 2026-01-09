@@ -1062,6 +1062,43 @@ entries:
   geoserver:
   - apiVersion: v2
     appVersion: 2.27.3
+    created: "2026-01-09T18:35:14.188715674Z"
+    dependencies:
+    - alias: activemq
+      condition: cluster.enabled
+      name: activemq-classic
+      repository: https://nds-cprm.github.io/helm-charts/
+      version: 0.1.1
+    - condition: nginx.enabled
+      name: nginx
+      repository: https://nds-cprm.github.io/helm-charts/
+      version: 0.3.1
+    description: GeoServer is an open source server for sharing geospatial data.  Designed
+      for interoperability, it publishes data from any major spatial data source using
+      open standards
+    digest: 6556f747d419023acde9d02cfbd2ed0a903df39ddcbfb35cb240e74293293eb8
+    home: https://geoserver.org/
+    icon: https://geoserver.org/img/geoserver-logo.png
+    keywords:
+    - GIS
+    - FOSS4G
+    - webmap
+    - WMS
+    - WFS
+    - WCS
+    maintainers:
+    - email: carlos.mota@sgb.gov.br
+      name: Carlos Eduardo Mota
+    name: geoserver
+    sources:
+    - https://github.com/geoserver/geoserver
+    - https://github.com/nds-cprm/geoserver-oci
+    type: application
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/geoserver-1.0.1/geoserver-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v2
+    appVersion: 2.27.3
     created: "2026-01-09T12:58:29.951886177Z"
     dependencies:
     - alias: activemq
@@ -1695,4 +1732,4 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/sqlserver-0.1.0/sqlserver-0.1.0.tgz
     version: 0.1.0
-generated: "2026-01-09T12:58:29.952289336Z"
+generated: "2026-01-09T18:35:14.188937477Z"
