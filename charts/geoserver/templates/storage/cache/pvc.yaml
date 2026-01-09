@@ -15,6 +15,7 @@ spec:
   volumeMode: Filesystem
   {{- if .volumeName }}
   volumeName: {{ .volumeName | quote }}
+  storageClassName: ""
   {{- else }}
   {{-  if .storage.className }}
   storageClassName: {{ .storage.className | quote }}
