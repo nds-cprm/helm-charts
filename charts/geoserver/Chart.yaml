@@ -24,8 +24,7 @@ appVersion: "2.27.3"
 dependencies:
   - name: activemq-classic
     version: "0.1.0"
-    # repository: "https://nds-cprm.github.io/helm-charts/"
-    repository: "file:///home/mota/vscode/helm-charts/charts/activemq-classic"
+    repository: "https://nds-cprm.github.io/helm-charts/"
     alias: activemq
     condition: cluster.enabled
   - name: nginx
