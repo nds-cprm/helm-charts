@@ -54,6 +54,7 @@ extraVolumeMounts: []
 #   mountPath: "/etc/foo"
 #   readOnly: true
 
+# Storage
 pvc:
   data:
     enabled: false   # Ignored when cluster.enabled=true
@@ -77,6 +78,7 @@ pvc:
       accessModes:
         - ReadWriteMany
 
+# Geoserver Cluster
 cluster:
   enabled: false
   readOnly: false   # enabled/disabled
@@ -84,8 +86,7 @@ cluster:
   embeddedBroker: false # enabled/disabled
   brokerURL: ""
 
-
-# Specific
+# Geoserver Specific
 master:
   replicaCount: 1
 
@@ -270,6 +271,7 @@ slave:
         retry: 10
         maxWait: 500 
 
+# Dependencies
 activemq:
   ingress:
     enabled: true
