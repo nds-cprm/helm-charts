@@ -1,0 +1,136 @@
+{{- if .Values.cluster.enabled -}}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "geoserver.slave.fullname" . }}
+  labels:
+    {{- include "geoserver.slave.labels" . | nindent 4 }}
+spec:
+  serviceName: {{ include "geoserver.slave.fullname" . }}
+  {{- if not .Values.slave.autoscaling.enabled }}
+  replicas: {{ .Values.slave.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "geoserver.slave.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+        {{- with .Values.slave.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "geoserver.slave.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "geoserver.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.slave.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: copy-geoserver-data
+          image: docker.io/library/debian:trixie-slim
+          volumeMounts:
+            - name: master-data
+              mountPath: /srv/geoserver/src  # Caminho de onde os dados serão copiados
+              readOnly: true            # É boa prática montar a origem como só de leitura
+            - name: slave-data
+              mountPath: /srv/geoserver/dst
+          command: 
+            - sh
+            - "-c"
+            - "cp -rpuv /srv/geoserver/src/* /srv/geoserver/dst && rm -rf /srv/geoserver/dst/cluster"
+      {{- $extraInitContainers := concat .Values.initContainers .Values.slave.initContainers }}
+      {{- if $extraInitContainers }}
+        {{- $extraInitContainers | uniq | toYaml | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: master-data
+          persistentVolumeClaim: 
+            claimName: {{ include "geoserver.pvc.data.name" . }}
+        - name: slave-data
+          emptyDir:
+            sizeLimit: 500Mi
+        - name: cache
+          persistentVolumeClaim: 
+            claimName: {{ include "geoserver.pvc.cache.name" . }}
+      {{- $extraVolumes := concat .Values.extraVolumes .Values.slave.extraVolumes }}
+      {{- if $extraVolumes }}      
+        {{- $extraVolumes | uniq | toYaml | nindent 8 }}
+      {{- end }}   
+      {{- $extraHosts := concat .Values.extraHosts .Values.slave.extraHosts }}
+      {{- if $extraHosts }}
+      hostAliases:
+        {{- $extraHosts | uniq | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.slave.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: tcp-{{ .Values.slave.service.port }}
+              containerPort: {{ .Values.slave.service.port }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "geoserver.slave.fullname" . }}
+          volumeMounts:
+            - mountPath: {{ .Values.pvc.data.mountPath }}
+              name: slave-data
+            - mountPath: {{ .Values.pvc.cache.mountPath }}
+              name: cache
+            {{- $extraVolumeMounts := concat .Values.extraVolumeMounts .Values.master.extraVolumeMounts }}
+            {{- if $extraVolumeMounts }}
+            {{- $extraVolumeMounts | uniq | toYaml | nindent 12 }}
+            {{- end }}
+          livenessProbe:
+            exec:
+              command: 
+                - curl 
+                - "-fs" 
+                - http://localhost:{{ .Values.slave.service.port }}{{ include "geoserver.slave.contextPath" . }}
+            initialDelaySeconds: 60
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.slave.resources | nindent 12 }}
+      {{- with .Values.slave.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.slave.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.slave.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+  {{/*volumeClaimTemplates:
+    - metadata:
+        name: data-dir
+        labels:
+          {{- include "geoserver.slave.labels" . | nindent 10 }}
+      spec:
+        volumeMode: Filesystem
+        {{- if .Values.slave.pvc.volumeName }}
+        volumeName: {{ .Values.slave.pvc.volumeName | quote }}
+        {{- end }}
+        accessModes:
+          {{- range .Values.slave.pvc.storage.accessModes }}
+          - {{ . }}
+          {{- end }}
+        {{- if and (not .Values.slave.pvc.volumeName) .Values.slave.pvc.storage.className }}
+        storageClassName: {{ .Values.slave.pvc.storage.className | quote }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.slave.pvc.storage.size }}*/}}
+{{- end -}}

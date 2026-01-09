@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <title>{{ .Release.Name }}-{{ .Chart.Name }}</title>
+    </head>
+    <body>
+        <h1>Alive!</h1>
+    </body>
+</html>
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8"/>
+    <title>{{ .Release.Name }}-{{ .Chart.Name }}</title>
+    <meta http-equiv="refresh" content="2; URL='{{ .Values.master.config.contextPath }}'"/>
+</head>
+<body>
+    <p>
+        Você está sendo redirecionado para o geoserver.
+        Clique <a href="{{ .Values.master.config.contextPath }}">aqui, se o redirecionamento não acontecer</a>
+    </p>
+</body>
+</html>

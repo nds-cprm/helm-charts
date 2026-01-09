@@ -1,0 +1,31 @@
+{{- $pvcEnabled := or .Values.pvc.cache.enabled .Values.cluster.enabled -}}
+{{- if $pvcEnabled -}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "geoserver.pvc.cache.name" . }}
+  labels:
+    {{- include "geoserver.labels" . | nindent 4 }}
+  {{- with .Values.pvc.cache -}}
+  {{- if .keep }}
+  annotations:
+    helm.sh/resource-policy: keep
+  {{- end }}
+spec:
+  volumeMode: Filesystem
+  {{- if .volumeName }}
+  volumeName: {{ .volumeName | quote }}
+  {{- else }}
+  {{-  if .storage.className }}
+  storageClassName: {{ .storage.className | quote }}
+  {{- end }}
+  {{- end }}
+  accessModes:
+    {{- range .storage.accessModes }}
+    - {{ . }}
+    {{- end }}
+  resources:
+    requests:
+      storage: {{ .storage.size }}
+  {{- end -}}
+{{- end }}

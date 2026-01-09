@@ -1,0 +1,94 @@
+{{- $pvcDataEnabled := or .Values.pvc.data.enabled .Values.cluster.enabled -}}
+{{- $pvcCacheEnabled := or .Values.pvc.cache.enabled .Values.cluster.enabled -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "geoserver.master.fullname" . }}
+  labels:
+    {{- include "geoserver.master.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.master.autoscaling.enabled }}
+  replicas: {{ .Values.master.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "geoserver.master.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+        {{- with .Values.master.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "geoserver.master.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "geoserver.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.master.podSecurityContext | nindent 8 }}
+      {{- $extraInitContainers := concat .Values.initContainers .Values.master.initContainers }}
+      {{- if $extraInitContainers }}
+      initContainers:
+        {{- $extraInitContainers | uniq | toYaml | nindent 8 }}
+      {{- end }}
+      {{- $dataVolume := ternary (list (dict "name" "data" "persistentVolumeClaim" (dict "claimName" (include "geoserver.pvc.data.name" .)))) list $pvcDataEnabled }}
+      {{- $cacheVolume := ternary (list (dict "name" "cache" "persistentVolumeClaim" (dict "claimName" (include "geoserver.pvc.cache.name" .)))) list $pvcCacheEnabled }}
+      {{- $extraVolumes := concat .Values.extraVolumes .Values.master.extraVolumes $dataVolume $cacheVolume }}
+      {{- if $extraVolumes }}
+      volumes:
+        {{- $extraVolumes | uniq | toYaml | nindent 8 }}
+      {{- end }}      
+      {{- $extraHosts := concat .Values.extraHosts .Values.master.extraHosts }}
+      {{- if $extraHosts }}
+      hostAliases:
+        {{- $extraHosts | uniq | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.master.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: tcp-{{ .Values.master.service.port }}
+              containerPort: {{ .Values.master.service.port }}
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: {{ include "geoserver.master.fullname" . }}
+          {{- $dataVolumeMount := ternary ( list (dict "name" "data" "mountPath" .Values.pvc.data.mountPath)) list $pvcDataEnabled }}
+          {{- $cacheVolumeMount := ternary ( list (dict "name" "cache" "mountPath" .Values.pvc.cache.mountPath)) list $pvcCacheEnabled }}
+          {{- $extraVolumeMounts := concat .Values.extraVolumeMounts .Values.master.extraVolumeMounts $dataVolumeMount $cacheVolumeMount }}
+          {{- if $extraVolumeMounts }}
+          volumeMounts:
+            {{- $extraVolumeMounts | uniq | toYaml | nindent 12 }}
+          {{- end }}
+          livenessProbe:
+            exec:
+              command: 
+                - curl 
+                - "-fs" 
+                - http://localhost:{{ .Values.master.service.port }}{{ include "geoserver.master.contextPath" . }}
+            initialDelaySeconds: 60
+            timeoutSeconds: 1
+            periodSeconds: 30
+            successThreshold: 1
+            failureThreshold: 3
+          resources:
+            {{- toYaml .Values.master.resources | nindent 12 }}
+      {{- with .Values.master.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.master.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.master.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
