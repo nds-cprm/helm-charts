@@ -37,6 +37,16 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/activemq-classic-0.1.0/activemq-classic-0.1.0.tgz
     version: 0.1.0
+  common:
+  - apiVersion: v2
+    created: "2026-08-26T19:26:31.196534211Z"
+    description: Biblioteca com modelos de manifestos padrão
+    digest: 0b9b24cb759d959489137357087e38ed0c44ad1e159aa0b4f6294493c2ce3c4c
+    name: common
+    type: library
+    urls:
+    - https://github.com/nds-cprm/helm-charts/releases/download/common-0.1.0/common-0.1.0.tgz
+    version: 0.1.0
   dspace:
   - apiVersion: v2
     appVersion: dspace-8.1
@@ -1793,4 +1803,4 @@ entries:
     urls:
     - https://github.com/nds-cprm/helm-charts/releases/download/sqlserver-0.1.0/sqlserver-0.1.0.tgz
     version: 0.1.0
-generated: "2026-07-07T09:17:44.585583711Z"
+generated: "2026-08-26T19:26:31.446784572Z"
