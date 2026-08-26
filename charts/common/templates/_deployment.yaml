@@ -1,0 +1,162 @@
+{{- define "common.deployment" -}}
+{{- $plainEnvVars := list }}
+{{- $encryptedEnvVars := list }}
+{{- range .Values.envVars -}}
+  {{- $isEncrypted := default false .isEncrypted -}}
+  {{- if $isEncrypted -}}
+    {{- $encryptedEnvVars = append $encryptedEnvVars . -}}
+  {{- else -}}
+    {{- $plainEnvVars = append $plainEnvVars . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $hasPlainEnv := gt (len $plainEnvVars) 0 -}}
+{{- $hasEncryptedEnv := gt (len $encryptedEnvVars) 0 -}}
+
+
+{{- if $hasPlainEnv -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "common.fullname" . }}-env
+data:
+{{- range $plainEnvVars }}
+  {{ .name }}: {{ .value | quote }}
+{{- end }}
+
+---
+{{- end -}}
+
+{{- if $hasEncryptedEnv -}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ include "common.fullname" . }}-env
+stringData:
+{{- range $encryptedEnvVars }}
+  {{ .name }}: {{ .value | quote }}
+{{- end }}
+
+---
+{{- end -}}
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  selector:
+    matchLabels:
+      {{- include "common.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "common.labels" . | nindent 8 }}
+        {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "common.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.hosts }}
+      hostAliases:
+        {{- .Values.hosts | uniq | toYaml | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          # Checar se as duas variaveis estão vazias
+          {{- if or $hasPlainEnv $hasEncryptedEnv }}
+          envFrom:
+            {{- if $hasPlainEnv }}
+            - configMapRef:
+                name: {{ include "common.fullname" . }}-env
+            {{- end }}
+            {{- if $hasEncryptedEnv }}
+            - secretRef:
+                name: {{ include "common.fullname" . }}-env
+            {{- end }}
+          {{- end }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- with .Values.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+      {{- with .Values.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+{{ if .Values.autoscaling.enabled -}}
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "common.fullname" . }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "common.fullname" . }}
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics:
+    {{- if .Values.autoscaling.targetCPUUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+    {{- end }}
+    {{- if .Values.autoscaling.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+    {{- end }}
+{{- end -}}
+{{- end -}}
